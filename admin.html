@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Toko - Berkah Jaya</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0d1a14">
+<script>
+  if (matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Tailwind v4 versi peramban: praktis untuk demo, tapi CSS dikompilasi saat halaman
+     dibuka. Untuk produksi jalankan `npx @tailwindcss/cli -i src.css -o tailwind.css`. -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<style type="text/tailwindcss">
+  :root{
+    --bg:#f4f6f3; --surface:#ffffff; --surface2:#ecefe7; --surface3:#e2e7dd;
+    --ink:#16211c; --ink2:#4b554f; --ink3:#6d7772;
+    --line:#dbe1d8; --line2:#c8d0c4;
+    --brand:#14603c; --brand2:#1d7a4c; --brandink:#0d3f28;
+    --brandsoft:#e4efe8;
+    --warn:#8a5a12; --warnsoft:#f6eedd;
+    --danger:#9c3a2c; --dangersoft:#f7e8e5;
+  }
+  .dark{
+    --bg:#0b100d; --surface:#141b16; --surface2:#1b241d; --surface3:#222e26;
+    --ink:#eef3ee; --ink2:#b3bfb7; --ink3:#8c9a92;
+    --line:#26312a; --line2:#36443a;
+    --brand:#5fbd8b; --brand2:#78cea0; --brandink:#0b1f14;
+    --brandsoft:#1b2c22;
+    --warn:#e0b263; --warnsoft:#2e2415;
+    --danger:#e08375; --dangersoft:#2e1a17;
+  }
+
+  @theme inline {
+    --color-bg:var(--bg); --color-surface:var(--surface); --color-surface2:var(--surface2); --color-surface3:var(--surface3);
+    --color-ink:var(--ink); --color-ink2:var(--ink2); --color-ink3:var(--ink3);
+    --color-line:var(--line); --color-line2:var(--line2);
+    --color-brand:var(--brand); --color-brand2:var(--brand2); --color-brandink:var(--brandink);
+    --color-brandsoft:var(--brandsoft);
+    --color-warn:var(--warn); --color-warnsoft:var(--warnsoft);
+    --color-danger:var(--danger); --color-dangersoft:var(--dangersoft);
+    --font-sans:"Geist",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --font-display:"Bricolage Grotesque","Geist",system-ui,sans-serif;
+    --ease-swift:cubic-bezier(.16,1,.3,1);
+  }
+
+  @custom-variant dark (&:where(.dark, .dark *));
+
+  @layer base{
+    body{ @apply bg-bg text-ink font-sans text-[15px] antialiased }
+    h1,h2,h3{ @apply font-display font-semibold tracking-[-.02em] leading-tight }
+    :focus-visible{ @apply outline-2 outline-offset-2 outline-brand; border-radius:4px }
+  }
+
+  @layer components{
+    .card{ @apply rounded-2xl border border-line bg-surface }
+    .icon{ @apply size-[18px] shrink-0 fill-none stroke-current; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round }
+    .icon-filled{ @apply fill-current stroke-none }
+
+    .btn{ @apply inline-flex items-center justify-center gap-2 rounded-xl font-semibold cursor-pointer whitespace-nowrap
+                 transition-colors duration-150 px-4 py-2.5 text-sm
+                 disabled:opacity-55 disabled:cursor-not-allowed
+                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand }
+    .btn-primary{ @apply bg-brand text-white hover:bg-brand2 }
+    .btn-ghost{ @apply border border-line2 hover:bg-surface2 }
+    .btn-danger{ @apply border border-danger/35 text-danger hover:bg-dangersoft }
+    .btn-ok{ @apply border border-brand/35 bg-brandsoft text-brandink hover:brightness-95 dark:text-brand }
+    .btn-xs{ @apply px-3 py-1.5 text-[13px] rounded-lg }
+
+    .field-label{ @apply block text-[13.5px] font-medium mb-1.5 }
+    .field-input{ @apply w-full rounded-xl border border-line2 bg-bg px-3.5 py-2.5 text-[15px] text-ink
+                        placeholder:text-ink3 focus:outline-none focus:border-brand focus:ring-3 focus:ring-brandsoft }
+    .field-hint{ @apply text-xs text-ink3 mt-1.5 }
+
+    .navlink{ @apply flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-[14.5px] font-medium text-ink2 transition-colors duration-150 hover:bg-surface2 hover:text-ink }
+    .navlink[aria-current="page"]{ @apply bg-brand text-white hover:bg-brand }
+    .badge{ @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium }
+    .badge-ready{ @apply bg-brandsoft text-brandink dark:text-brand }
+    .badge-low{ @apply bg-warnsoft text-warn }
+    .badge-out{ @apply bg-dangersoft text-danger }
+    .badge-pending{ @apply bg-warnsoft text-warn }
+    .badge-published{ @apply bg-brandsoft text-brandink dark:text-brand }
+    .badge-hidden{ @apply bg-surface3 text-ink3 }
+
+    .th{ @apply px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-ink3 whitespace-nowrap }
+    .td{ @apply px-3 py-3 align-middle }
+
+    /* Sasaran sentuh di ponsel: semua tombol dan kontrol minimal 44px.
+       Ditaruh paling akhir @layer components karena base kalah oleh components. */
+    @media (max-width:640px){
+      .btn, .field-input, select.field-input{ min-height:44px }
+      .btn-xs{ min-height:44px; padding-inline:.875rem }
+      /* Slider AHP tingginya cuma 16px; area sentuhnya dibesarkan. */
+      input[type="range"]{ height:44px }
+    }
+  }
+
+  dialog::backdrop{ background:rgb(0 0 0 / .55) }
+</style>
+</head>
+<body class="min-h-dvh">
+
+<svg width="0" height="0" class="absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V5M4 20h16"/><rect x="8" y="12" width="3" height="8" rx="1"/><rect x="14" y="8" width="3" height="12" rx="1"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="m12 3 8 4.2v9.6L12 21l-8-4.2V7.2Z"/><path d="m4 7.2 8 4.3 8-4.3M12 21v-9.5"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 12a7.5 7.5 0 0 1-10.9 6.7L4.5 20l1.3-4.4A7.5 7.5 0 1 1 20 12Z"/></symbol>
+  <symbol id="i-pack" viewBox="0 0 24 24"><path d="M3 7h18v13H3z"/><path d="M3 7l2-4h14l2 4M12 3v4"/><path d="M9 12h6"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10"/><path d="M4 8h16l-3.2 6a4 4 0 0 1-9.6 0Z"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 9.5V20h16V9.5"/><path d="m3 9.5 1.8-5.5h14.4L21 9.5a3 3 0 0 1-5.4 2 3 3 0 0 1-4.6 2 3 3 0 0 1-4.6-2 3 3 0 0 1-5.4-2Z"/></symbol>
+</svg>
+
+<div class="mx-auto flex max-w-[1400px] flex-col lg:flex-row">
+
+  <!-- ============================ SIDEBAR ============================ -->
+  <aside class="border-b border-line bg-surface lg:w-66 lg:shrink-0 [@media(min-height:760px)]:lg:sticky [@media(min-height:760px)]:lg:top-0 [@media(min-height:760px)]:lg:h-dvh lg:border-r lg:border-b-0">
+    <div class="flex items-center gap-3 px-5 py-4">
+      <span class="grid size-9.5 place-items-center rounded-[11px] bg-brand font-display text-base font-bold text-white" aria-hidden="true">BJ</span>
+      <span class="flex flex-col leading-tight">
+        <span class="font-display text-[15px] font-semibold">Admin Toko</span>
+        <span class="text-xs text-ink3">Berkah Jaya &middot; Cibubur</span>
+      </span>
+      <button class="btn btn-ghost btn-xs ml-auto lg:hidden" type="button" id="navToggle" aria-expanded="false" aria-controls="adminNav">Menu</button>
+    </div>
+
+    <nav class="hidden px-3 pb-4 lg:block" id="adminNav" aria-label="Navigasi admin">
+      <ul class="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] lg:flex-col lg:gap-1 lg:overflow-visible" data-nav-list>
+        <li><a class="navlink" href="#ringkasan" data-view="ringkasan"><svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg>Ringkasan</a></li>
+        <li><a class="navlink" href="#produk" data-view="produk"><svg class="icon" aria-hidden="true"><use href="#i-box"></use></svg>Produk<span class="ml-auto rounded-full bg-surface3 px-2 py-0.5 text-xs tabular-nums" data-count="produk">0</span></a></li>
+        <li><a class="navlink" href="#ulasan" data-view="ulasan"><svg class="icon" aria-hidden="true"><use href="#i-chat"></use></svg>Ulasan<span class="ml-auto rounded-full bg-surface3 px-2 py-0.5 text-xs tabular-nums" data-count="ulasan">0</span></a></li>
+        <li><a class="navlink" href="#analitik" data-view="analitik"><svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg>Analitik penjualan</a></li>
+        <li><a class="navlink" href="#ahp" data-view="ahp"><svg class="icon" aria-hidden="true"><use href="#i-scale"></use></svg>AHP<span class="ml-auto rounded-full px-2 py-0.5 text-xs" data-badge="ahp">-</span></a></li>
+        <li><a class="navlink" href="#toko" data-view="toko"><svg class="icon" aria-hidden="true"><use href="#i-store"></use></svg>Info toko</a></li>
+      </ul>
+      <div class="mt-4 hidden rounded-xl border border-line bg-surface2 p-3.5 lg:block">
+        <p class="text-[12.5px] leading-relaxed text-ink2">
+          Perubahan disimpan di peramban ini saja (localStorage). Untuk produksi perlu backend.
+        </p>
+        <button class="btn btn-ghost btn-xs mt-2.5 w-full" type="button" id="btnSite">Buka storefront</button>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ============================= KONTEN ============================= -->
+  <main class="min-w-0 flex-1 p-5 md:p-8">
+
+    <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <h1 class="text-[26px] md:text-[30px]" id="pageTitle">Ringkasan</h1>
+        <p class="mt-1 text-[14.5px] text-ink2" id="pageSub">Pantau stok dan harga, lalu kirim perubahannya ke storefront.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn btn-ghost" type="button" id="btnExport">Ekspor JSON</button>
+        <button class="btn btn-ghost" type="button" id="btnImport">Impor JSON</button>
+        <button class="btn btn-ghost" type="button" id="btnReset">Reset data</button>
+        <button class="btn btn-primary" type="button" id="btnAdd">Tambah produk</button>
+      </div>
+      <input class="hidden" type="file" id="fileImport" accept="application/json,.json">
+    </header>
+
+    <p class="mb-5 hidden rounded-xl border px-4 py-3 text-[14px]" id="toast" role="status" aria-live="polite"></p>
+
+    <!-- ------------------------- RINGKASAN ------------------------- -->
+    <section data-section="ringkasan">
+      <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="card p-4.5">
+          <p class="text-[13px] text-ink3">Total produk</p>
+          <p class="mt-1 font-display text-[28px] font-bold tabular-nums" data-stat="total">0</p>
+        </div>
+        <div class="card p-4.5">
+          <p class="text-[13px] text-ink3">Stok kosong</p>
+          <p class="mt-1 font-display text-[28px] font-bold tabular-nums text-danger" data-stat="kosong">0</p>
+        </div>
+        <div class="card p-4.5">
+          <p class="text-[13px] text-ink3">Stok terbatas</p>
+          <p class="mt-1 font-display text-[28px] font-bold tabular-nums text-warn" data-stat="terbatas">0</p>
+        </div>
+        <div class="card p-4.5">
+          <p class="text-[13px] text-ink3">Nilai stok</p>
+          <p class="mt-1 font-display text-[28px] font-bold tabular-nums" data-stat="nilai">Rp0</p>
+        </div>
+      </div>
+
+      <div class="mt-5 grid gap-4 xl:grid-cols-2">
+        <div class="card overflow-hidden">
+          <h2 class="border-b border-line px-4.5 py-3.5 text-[15px]">Perlu segera ditambah</h2>
+          <ul class="divide-y divide-line" data-list="restock"></ul>
+        </div>
+        <div class="card overflow-hidden">
+          <h2 class="border-b border-line px-4.5 py-3.5 text-[15px]">Stok per kategori</h2>
+          <ul class="divide-y divide-line" data-list="perKategori"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------- PRODUK --------------------------- -->
+    <section data-section="produk" hidden>
+      <div class="card mb-4 flex flex-col gap-3 p-3.5 md:flex-row md:items-center">
+        <div class="relative flex-1 md:max-w-[340px]">
+          <svg class="icon pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-ink3" aria-hidden="true"><use href="#i-search"></use></svg>
+          <label class="sr-only" for="q">Cari produk</label>
+          <input class="field-input ps-10" id="q" type="search" placeholder="Cari nama produk" autocomplete="off">
+        </div>
+        <label class="sr-only" for="fCat">Filter kategori</label>
+        <select class="field-input md:max-w-[190px]" id="fCat"></select>
+        <label class="sr-only" for="fStock">Filter stok</label>
+        <select class="field-input md:max-w-[190px]" id="fStock">
+          <option value="semua">Semua kondisi stok</option>
+          <option value="ready">Hanya Ready</option>
+          <option value="low">Hanya stok terbatas</option>
+          <option value="out">Hanya stok kosong</option>
+          <option value="off">Hanya tidak dijual</option>
+        </select>
+        <p class="text-[13.5px] text-ink3 md:ml-auto" data-count="produkTampil">0 produk</p>
+      </div>
+
+      <div class="card overflow-hidden">
+        <!-- Tabel di layar lebar -->
+        <div class="hidden overflow-x-auto md:block">
+          <table class="w-full border-collapse">
+            <caption class="sr-only">Daftar produk toko</caption>
+            <thead class="border-b border-line bg-surface2">
+              <tr>
+                <th class="th">Produk</th>
+                <th class="th">Kategori</th>
+                <th class="th">Eceran</th>
+                <th class="th">Grosir</th>
+                <th class="th">Stok</th>
+                <th class="th">Status</th>
+                <th class="th text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-line" data-list="produk"></tbody>
+          </table>
+        </div>
+        <!-- Kartu di ponsel -->
+        <ul class="divide-y divide-line md:hidden" data-list="produkMobile"></ul>
+      </div>
+
+      <div class="mt-3 flex flex-wrap items-center gap-3" id="produkPaginasi"></div>
+    </section>
+
+    <!-- --------------------------- ULASAN --------------------------- -->
+    <section data-section="ulasan" hidden>
+      <div class="card mb-4 flex flex-wrap items-center gap-3 p-3.5">
+        <label class="sr-only" for="fStatus">Filter status ulasan</label>
+        <select class="field-input md:max-w-[200px]" id="fStatus">
+          <option value="semua">Semua status</option>
+          <option value="tayang">Tayang di storefront</option>
+          <option value="pending">Menunggu diperiksa</option>
+          <option value="sembunyi">Disembunyikan</option>
+        </select>
+        <p class="text-[13.5px] text-ink3 md:ml-auto" data-count="ulasanTampil">0 ulasan</p>
+      </div>
+
+      <form class="card mb-4 grid gap-x-4 p-4 md:grid-cols-[1fr_150px_1fr_auto] md:items-end" id="reviewForm" novalidate>
+        <div>
+          <label class="field-label" for="rvName">Nama</label>
+          <input class="field-input" id="rvName" type="text" placeholder="Nama pelanggan" required>
+        </div>
+        <div>
+          <label class="field-label" for="rvStars">Bintang</label>
+          <select class="field-input" id="rvStars">
+            <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" for="rvText">Ulasan</label>
+          <input class="field-input" id="rvText" type="text" placeholder="Isi ulasan" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Tambah ulasan</button>
+      </form>
+
+      <div class="card overflow-hidden">
+        <ul class="divide-y divide-line" data-list="ulasan"></ul>
+      </div>
+    </section>
+
+    <!-- --------------------------- INFO TOKO ------------------------ -->
+    <section data-section="toko" hidden>
+      <form class="card grid gap-x-4 gap-y-4 p-4 md:grid-cols-2 md:p-5" id="settingsForm">
+        <div>
+          <label class="field-label" for="sNama">Nama toko</label>
+          <input class="field-input" id="sNama" type="text">
+        </div>
+        <div>
+          <label class="field-label" for="sWa">Nomor WhatsApp</label>
+          <input class="field-input" id="sWa" type="tel" inputmode="numeric" placeholder="6281234567890">
+          <p class="field-hint">Format internasional tanpa tanda plus. Nomor inilah yang dipakai semua tombol pesan.</p>
+        </div>
+        <div>
+          <label class="field-label" for="sTelepon">Telepon tampil</label>
+          <input class="field-input" id="sTelepon" type="text" placeholder="0812-3456-7890">
+        </div>
+        <div>
+          <label class="field-label" for="sUpdated">Tanggal harga</label>
+          <input class="field-input" id="sUpdated" type="date">
+        </div>
+        <div class="md:col-span-2">
+          <label class="field-label" for="sAlamat">Alamat</label>
+          <input class="field-input" id="sAlamat" type="text">
+        </div>
+        <div class="md:col-span-2">
+          <label class="field-label" for="sMaps">URL Google Maps</label>
+          <input class="field-input" id="sMaps" type="url">
+        </div>
+        <div>
+          <label class="field-label" for="sMinAntar">Minimal belanja antar</label>
+          <input class="field-input" id="sMinAntar" type="number" min="0" step="1000">
+        </div>
+        <div>
+          <label class="field-label" for="sGratisAntar">Batas gratis ongkir</label>
+          <input class="field-input" id="sGratisAntar" type="number" min="0" step="1000">
+        </div>
+        <div class="flex flex-wrap gap-2 md:col-span-2">
+          <button class="btn btn-primary" type="submit">Simpan info toko</button>
+          <button class="btn btn-ok" type="button" id="btnSyncCopy">Terapkan ke contoh pesan</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ----------------------- ANALITIK PENJUALAN ---------------------- -->
+    <section data-section="analitik" hidden>
+      <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="card p-4.5"><p class="text-[13px] text-ink3">Omzet hari ini</p>
+          <p class="mt-1 font-display text-[26px] font-bold tabular-nums" data-stat2="omzetHari">Rp0</p></div>
+        <div class="card p-4.5"><p class="text-[13px] text-ink3">Omzet bulan ini</p>
+          <p class="mt-1 font-display text-[26px] font-bold tabular-nums" data-stat2="omzetBulan">Rp0</p></div>
+        <div class="card p-4.5"><p class="text-[13px] text-ink3">Transaksi</p>
+          <p class="mt-1 font-display text-[26px] font-bold tabular-nums" data-stat2="trx">0</p>
+          <p class="mt-0.5 text-[12.5px] text-ink3" data-stat2="trxHari">0 hari ini</p></div>
+        <div class="card p-4.5"><p class="text-[13px] text-ink3">Produk kritis</p>
+          <p class="mt-1 font-display text-[26px] font-bold tabular-nums text-danger" data-stat2="kritis">0</p>
+          <p class="mt-0.5 text-[12.5px] text-ink3">stok &le; batas minimum</p></div>
+      </div>
+
+      <div class="card mt-5 overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4.5 py-3.5">
+          <h2 class="text-[15px]">Tren omzet 30 hari terakhir</h2>
+          <div class="flex items-center gap-3">
+            <p class="text-[13px] text-ink3" data-stat2="trenSub">semua nilai nol</p>
+            <button class="btn btn-ghost btn-xs" type="button" id="trenToggle" aria-expanded="false" aria-controls="trenTabel">Tabel</button>
+          </div>
+        </div>
+        <div class="overflow-x-auto p-4">
+          <!-- Grafik dibuat sebagai SVG langsung, jadi tidak perlu pustaka grafik. -->
+          <svg class="h-52 w-full min-w-[640px]" viewBox="0 0 660 220"
+               role="img" aria-labelledby="trenJudul" id="trenChart">
+            <title id="trenJudul">Grafik garis omzet penjualan harian 30 hari terakhir</title>
+          </svg>
+        </div>
+        <div class="overflow-x-auto border-t border-line" id="trenTabel" hidden></div>
+      </div>
+
+      <div class="mt-5 grid gap-4 xl:grid-cols-2">
+        <div class="card overflow-hidden">
+          <h2 class="border-b border-line px-4.5 py-3.5 text-[15px]">5 produk terlaris</h2>
+          <ul class="divide-y divide-line" data-list2="terlaris"></ul>
+        </div>
+        <div class="card overflow-hidden">
+          <h2 class="border-b border-line px-4.5 py-3.5 text-[15px]">Tidak bergerak 14 hari</h2>
+          <ul class="divide-y divide-line" data-list2="tidakGerak"></ul>
+        </div>
+      </div>
+
+      <form class="card mt-5 grid gap-x-4 gap-y-4 p-4 md:p-5" id="saleForm">
+        <div class="md:col-span-2">
+          <h2 class="text-[15px]">Catat penjualan</h2>
+          <p class="mt-1 text-[13.5px] text-ink2">Penjualan di kasir toko maupun hasil closing WhatsApp. Harga satuan disimpan apa adanya saat transaksi, jadi laporan lama tidak berubah kalau harga produk diubah. Stok diatur terpisah di menu Produk.</p>
+        </div>
+        <div>
+          <label class="field-label" for="slTanggal">Tanggal</label>
+          <input class="field-input" id="slTanggal" type="date" required>
+        </div>
+        <div>
+          <label class="field-label" for="slChannel">Sumber</label>
+          <select class="field-input" id="slChannel">
+            <option value="offline">Toko offline (langsung)</option>
+            <option value="whatsapp">Pesanan via WhatsApp</option>
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <label class="field-label" for="slPelanggan">Nama pembeli (opsional)</label>
+          <input class="field-input" id="slPelanggan" type="text" placeholder="Contoh: Bu Sari">
+        </div>
+
+        <div class="md:col-span-2" id="slItems"></div>
+
+        <div class="flex flex-wrap items-center gap-2 md:col-span-2">
+          <button class="btn btn-ghost" type="button" id="slAddRow">Tambah barang</button>
+          <button class="btn btn-primary" type="submit">Simpan penjualan</button>
+          <p class="text-[14px] md:ml-auto">Total <b class="tabular-nums" id="slTotal">Rp0</b></p>
+        </div>
+      </form>
+
+      <div class="card mt-5 overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4.5 py-3.5">
+          <h2 class="text-[15px]">Riwayat penjualan</h2>
+          <div class="flex flex-wrap gap-2">
+            <label class="sr-only" for="slDari">Dari tanggal</label>
+            <input class="field-input !w-auto !py-1.5 !text-[13.5px]" id="slDari" type="date">
+            <label class="sr-only" for="slSampai">Sampai tanggal</label>
+            <input class="field-input !w-auto !py-1.5 !text-[13.5px]" id="slSampai" type="date">
+            <button class="btn btn-ghost btn-xs" type="button" id="slExport">Ekspor CSV</button>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <caption class="sr-only">Riwayat penjualan yang diinput admin</caption>
+            <thead class="border-b border-line bg-surface2">
+              <tr>
+                <th class="th">Invoice</th><th class="th">Tanggal</th><th class="th">Sumber</th>
+                <th class="th">Pembeli</th><th class="th">Barang</th><th class="th text-right">Total</th><th class="th"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-line" data-list2="sales"></tbody>
+          </table>
+        </div>
+        <p class="border-t border-line px-4.5 py-3 text-[13px] text-ink3" data-stat2="salesSub"></p>
+      </div>
+    </section>
+
+    <!-- ----------------------------- AHP ------------------------------- -->
+    <section data-section="ahp" hidden>
+      <!-- Panduan admin: bukan perhitungan, melainkan contoh angka kecil yang
+           ditelusuri satu per satu sambil ditemani analogi sehari-hari. -->
+      <details class="card mb-4 p-4.5" id="ahpPanduan">
+        <summary class="cursor-pointer text-[15px] font-semibold">Panduan: contoh perhitungan dari nol (bahasa sederhana)</summary>
+        <div class="mt-3 space-y-4 text-[13.5px] leading-relaxed text-ink2" id="ahpPanduanIsi"></div>
+      </details>
+
+      <div class="card mb-4 p-4.5" id="ahpStatus">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span class="badge" id="ahpBadge" data-badge="ahp-besar">-</span>
+          <h2 class="text-[15px]">Uji konsistensi matriks</h2>
+        </div>
+        <dl class="mt-3 grid gap-x-5 gap-y-2 text-[14px] sm:grid-cols-2 lg:grid-cols-4">
+          <div class="flex justify-between gap-2 sm:block"><dt class="text-ink3">Lambda maks</dt><dd class="tabular-nums font-semibold" data-ahp="lambda">-</dd></div>
+          <div class="flex justify-between gap-2 sm:block"><dt class="text-ink3">Consistency Index</dt><dd class="tabular-nums font-semibold" data-ahp="ci">-</dd></div>
+          <div class="flex justify-between gap-2 sm:block"><dt class="text-ink3">Consistency Ratio</dt><dd class="tabular-nums font-semibold" data-ahp="cr">-</dd></div>
+          <div class="flex justify-between gap-2 sm:block"><dt class="text-ink3">Ambang</dt><dd class="tabular-nums font-semibold">CR &le; 0,1</dd></div>
+        </dl>
+        <p class="mt-3 text-[13.5px] text-ink2" id="ahpPesan"></p>
+        <p class="mt-2 rounded-lg border border-warn/35 bg-warnsoft px-3 py-2 text-[13px] text-warn" id="ahpContoh"></p>
+      </div>
+
+      <div class="card mb-4 overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4.5 py-3.5">
+          <div>
+            <h2 class="text-[15px]">Perbandingan berpasangan</h2>
+            <p class="mt-0.5 text-[13px] text-ink3">Geser ke kanan bila kolom kiri lebih penting. Skala 1-9 Saaty.</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-ghost btn-xs" type="button" id="ahpResetMatriks">Ulangi 1</button>
+            <button class="btn btn-ghost btn-xs" type="button" id="ahpTukar">Balik arah</button>
+          </div>
+        </div>
+        <div class="divide-y divide-line" id="ahpPairs"></div>
+      </div>
+
+      <div class="card mb-4 overflow-hidden">
+        <h2 class="border-b border-line px-4.5 py-3.5 text-[15px]">Bobot prioritas kriteria</h2>
+        <ul class="divide-y divide-line" data-list2="bobot"></ul>
+      </div>
+
+      <div class="card mb-4 overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4.5 py-3.5">
+          <div>
+            <h2 class="text-[15px]">Penilaian alternatif</h2>
+            <p class="mt-0.5 text-[13px] text-ink3">Nilai 1-9 tiap produk untuk setiap kriteria, sesuai urutan bobot di atas.</p>
+          </div>
+          <button class="btn btn-ghost btn-xs" type="button" id="ahpIsiProduk">Isi dari katalog</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <caption class="sr-only">Penilaian alternatif terhadap kriteria</caption>
+            <thead class="border-b border-line bg-surface2" id="ahpAltHead"></thead>
+            <tbody class="divide-y divide-line" id="ahpAltBody"></tbody>
+          </table>
+        </div>
+        <div class="flex flex-wrap gap-2 border-t border-line px-4.5 py-3.5">
+          <button class="btn btn-ghost btn-xs" type="button" id="ahpTambahBaris">Tambah alternatif</button>
+        </div>
+      </div>
+
+      <div class="card mb-4 overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4.5 py-3.5">
+          <div>
+            <h2 class="text-[15px]">Hasil perangkingan</h2>
+            <p class="mt-0.5 text-[13px] text-ink3">Nilai akhir = jumlah (bobot kriteria &times; nilai alternatif).</p>
+          </div>
+          <button class="btn btn-ghost btn-xs" type="button" id="ahpCopy">Salin tabel</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <caption class="sr-only">Perangkingan alternatif hasil perhitungan AHP</caption>
+            <thead class="border-b border-line bg-surface2" id="ahpRankHead"></thead>
+            <tbody class="divide-y divide-line" id="ahpRankBody"></tbody>
+          </table>
+        </div>
+        <p class="border-t border-line px-4.5 py-3.5 text-[13px] text-ink3">
+          Matriks A, vektor bobot, dan nilai lambda ditampilkan agar langkah hitungnya bisa disalin ke laporan.
+        </p>
+      </div>
+
+      <details class="card mb-4 p-4.5">
+        <summary class="cursor-pointer text-[15px] font-semibold">Literatur perhitungan (matriks A, vektor bobot)</summary>
+        <pre class="mt-3 overflow-x-auto rounded-lg border border-line bg-bg p-3 text-[12.5px] leading-relaxed" id="ahpMatriksTeks"></pre>
+      </details>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============================== DIALOG PRODUK ============================== -->
+<dialog class="w-[min(560px,calc(100vw-1.5rem))] rounded-2xl border border-line bg-surface p-0 text-ink backdrop:bg-black/55" id="productDialog" aria-labelledby="dialogTitle">
+  <form class="" id="productForm" method="dialog" novalidate>
+    <div class="flex items-center justify-between border-b border-line px-5 py-3.5">
+      <h2 class="text-base" id="dialogTitle">Tambah produk</h2>
+      <button class="btn btn-ghost btn-xs" type="button" id="dialogClose" aria-label="Tutup">Tutup</button>
+    </div>
+
+    <div class="grid max-h-[70dvh] gap-x-4 gap-y-4 overflow-y-auto px-5 py-5 md:grid-cols-2">
+      <input type="hidden" id="fId">
+      <div class="md:col-span-2">
+        <label class="field-label" for="fName">Nama produk</label>
+        <input class="field-input" id="fName" type="text" required placeholder="Contoh: Beras Pandan Wangi 5 kg">
+      </div>
+      <div>
+        <label class="field-label" for="fCatInput">Kategori</label>
+        <select class="field-input" id="fCatInput" required></select>
+      </div>
+      <div>
+        <label class="field-label" for="fUnit">Satuan</label>
+        <input class="field-input" id="fUnit" type="text" required placeholder="karung / kg / bungkus">
+      </div>
+      <div>
+        <label class="field-label" for="fEcer">Harga eceran</label>
+        <input class="field-input" id="fEcer" type="number" min="0" step="100" required>
+      </div>
+      <div>
+        <label class="field-label" for="fGrosir">Harga grosir</label>
+        <input class="field-input" id="fGrosir" type="number" min="0" step="100" required>
+      </div>
+      <div>
+        <label class="field-label" for="fMinGrosir">Minimum grosir</label>
+        <input class="field-input" id="fMinGrosir" type="number" min="1" step="1" required>
+      </div>
+      <div>
+        <label class="field-label" for="fStok">Stok</label>
+        <input class="field-input" id="fStok" type="number" min="0" step="1" required>
+      </div>
+      <div>
+        <label class="field-label" for="fMinStock">Batas stok menipis</label>
+        <input class="field-input" id="fMinStock" type="number" min="0" step="1" required>
+        <p class="field-hint">Badge berubah jadi &ldquo;stok terbatas&rdquo; bila stok di bawah angka ini.</p>
+      </div>
+      <div class="md:col-span-2">
+        <label class="field-label" for="fImg">URL gambar</label>
+        <input class="field-input" id="fImg" type="url" placeholder="https://...">
+      </div>
+      <div class="md:col-span-2">
+        <label class="field-label" for="fAlt">Teks alternatif gambar</label>
+        <input class="field-input" id="fAlt" type="text" placeholder="Deskripsi singkat isi gambar">
+      </div>
+      <label class="flex items-center gap-2.5 md:col-span-2">
+        <input class="size-4.5 rounded border-line2 accent-brand" id="fAktif" type="checkbox">
+        <span class="text-sm">Tampilkan produk ini di storefront</span>
+      </label>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2 border-t border-line px-5 py-4">
+      <button class="btn btn-primary" type="submit" id="dialogSave">Simpan</button>
+      <button class="btn btn-ghost" type="button" id="dialogCancel">Batal</button>
+      <p class="hidden text-[13.5px] text-danger md:ml-auto" id="dialogError" role="alert"></p>
+    </div>
+  </form>
+</dialog>
+
+<script src="ahp.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var D = window.BJ;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  var VIEWS = {
+    ringkasan: { title: "Ringkasan", sub: "Pantau stok dan harga, lalu kirim perubahannya ke storefront." },
+    produk: { title: "Produk", sub: "Ubah stok, harga, dan ketersediaan barang." },
+    ulasan: { title: "Ulasan", sub: "Periksa dulu sebelum ditayangkan di storefront." },
+    analitik: { title: "Analitik penjualan", sub: "Catat penjualan toko, lalu lihat omzet dan barang terlaris." },
+    ahp: { title: "Bobot kriteria AHP", sub: "Isi penilaian berpasangan skala 1-9, sistem menghitung bobot dan uji konsistensi." },
+    toko: { title: "Info toko", sub: "Alamat, jam buka, nomor WhatsApp, dan aturan antar." }
+  };
+
+  // Nama produk dan ulasan berasal dari masukan admin, tapi tetap di-escape
+  // karena disisipkan lewat innerHTML.
+  function esc(v) {
+    return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  var filters = { q: "", cat: "semua", stock: "semua", status: "semua" };
+  var PER_HAL = 10;          // produk per halaman
+  var halaman = 1;           // halaman produk yang sedang dilihat
+  var editingId = null;
+
+  function toast(text, tone) {
+    var t = $("#toast");
+    t.textContent = text;
+    t.className = "mb-5 rounded-xl border px-4 py-3 text-[14px] "
+      + (tone === "err" ? "border-danger/35 bg-dangersoft text-danger" : "border-brand/35 bg-brandsoft text-brandink dark:text-brand");
+  }
+
+  function stockBadge(p) {
+    var st = D.stockState(p);
+    var cls = st.key === "ready" ? "badge-ready" : st.key === "low" ? "badge-low" : "badge-out";
+    return '<span class="badge ' + cls + '">' + st.label + "</span>";
+  }
+
+  /* ------------------------------ navigasi ----------------------------- */
+  function setView(name) {
+    if (!VIEWS[name]) name = "ringkasan";
+    $$("[data-section]").forEach(function (s) { s.hidden = s.dataset.section !== name; });
+    $$("[data-view]").forEach(function (a) {
+      if (a.dataset.view === name) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
+    $("#pageTitle").textContent = VIEWS[name].title;
+    $("#pageSub").textContent = VIEWS[name].sub;
+    $("#btnAdd").classList.toggle("hidden", name !== "produk");
+    if (location.hash.slice(1) !== name) history.replaceState(null, "", "#" + name);
+  }
+
+  addEventListener("hashchange", function () { setView(location.hash.slice(1)); });
+
+  $("#navToggle").addEventListener("click", function () {
+    var nav = $("#adminNav");
+    var open = !nav.classList.contains("hidden");
+    nav.classList.toggle("hidden", open);
+    this.setAttribute("aria-expanded", String(!open));
+  });
+  $("#btnSite").addEventListener("click", function () { window.open("index.html", "_blank", "noopener"); });
+
+  /* ------------------------------ ringkasan ---------------------------- */
+  function renderRingkasan() {
+    var ps = D.products;
+    var kosong = ps.filter(function (p) { return p.aktif && p.stock <= 0; }).length;
+    var terbatas = ps.filter(function (p) { return p.aktif && p.stock > 0 && p.stock <= p.minStock; }).length;
+    var nilai = ps.reduce(function (s, p) { return s + p.ecer * Math.max(0, p.stock); }, 0);
+
+    $('[data-stat="total"]').textContent = ps.length;
+    $('[data-stat="kosong"]').textContent = kosong;
+    $('[data-stat="terbatas"]').textContent = terbatas;
+    $('[data-stat="nilai"]').textContent = D.rupiah(nilai);
+
+    var restock = ps.filter(function (p) { return p.aktif && p.stock <= p.minStock; })
+      .sort(function (a, b) { return a.stock - b.stock; });
+    var ul = $('[data-list="restock"]');
+    ul.innerHTML = restock.length ? "" : '<li class="px-4.5 py-6 text-center text-[14px] text-ink3">Semua stok masih aman.</li>';
+    restock.forEach(function (p) {
+      var li = document.createElement("li");
+      li.className = "flex items-center gap-3 px-4.5 py-3";
+      li.innerHTML = '<span class="min-w-0 flex-1 truncate text-[14.5px]">' + p.name + "</span>"
+        + '<span class="text-[13.5px] tabular-nums text-ink2">sisa ' + p.stock + " " + p.unit + "</span>"
+        + stockBadge(p)
+        + '<button class="btn btn-ok btn-xs" type="button" data-restock="' + p.id + '">+10</button>';
+      ul.appendChild(li);
+    });
+
+    var perCat = {};
+    ps.forEach(function (p) {
+      if (!perCat[p.cat]) perCat[p.cat] = { n: 0, nilai: 0 };
+      perCat[p.cat].n += 1;
+      perCat[p.cat].nilai += p.ecer * Math.max(0, p.stock);
+    });
+    var el2 = $('[data-list="perKategori"]');
+    el2.innerHTML = "";
+    Object.keys(perCat).forEach(function (id) {
+      var li = document.createElement("li");
+      li.className = "flex items-center gap-3 px-4.5 py-3 text-[14.5px]";
+      li.innerHTML = '<span class="min-w-0 flex-1 truncate">' + D.catLabel(id) + "</span>"
+        + '<span class="tabular-nums text-ink2">' + perCat[id].n + " produk</span>"
+        + '<span class="w-28 text-right tabular-nums font-medium">' + D.rupiah(perCat[id].nilai) + "</span>";
+      el2.appendChild(li);
+    });
+  }
+
+  /* -------------------------------- produk ----------------------------- */
+  function filteredProducts() {
+    var q = filters.q.trim().toLowerCase();
+    return D.products.filter(function (p) {
+      if (filters.cat !== "semua" && p.cat !== filters.cat) return false;
+      if (q && (p.name + " " + p.unit).toLowerCase().indexOf(q) === -1) return false;
+      var st = D.stockState(p).key;
+      if (filters.stock === "off") return !p.aktif;
+      if (filters.stock !== "semua" && (st !== filters.stock || !p.aktif)) return false;
+      return true;
+    });
+  }
+
+  function renderProduk() {
+    var semua = filteredProducts();
+    var totalHal = Math.max(1, Math.ceil(semua.length / PER_HAL));
+    halaman = Math.min(Math.max(1, halaman), totalHal);
+    var list = semua.slice((halaman - 1) * PER_HAL, halaman * PER_HAL);
+
+    $('[data-count="produkTampil"]').textContent = semua.length + " produk"
+      + (totalHal > 1 ? " \u00b7 halaman " + halaman + " dari " + totalHal : "");
+    $('[data-count="produk"]').textContent = D.products.length;
+
+    var tbody = $('[data-list="produk"]');
+    var ul = $('[data-list="produkMobile"]');
+    tbody.innerHTML = "";
+    ul.innerHTML = "";
+
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td class="td py-8 text-center text-ink3" colspan="7">Tidak ada produk yang cocok dengan filter.</td></tr>';
+      ul.innerHTML = '<li class="px-4 py-8 text-center text-ink3">Tidak ada produk yang cocok dengan filter.</li>';
+      renderPaginasi(semua.length, totalHal);
+      return;
+    }
+
+    list.forEach(function (p) {
+      var st = D.stockState(p);
+      var tr = document.createElement("tr");
+      tr.className = st.key === "out" && p.aktif ? "bg-dangersoft/40" : st.key === "low" ? "bg-warnsoft/40" : "";
+      tr.innerHTML =
+        '<td class="td"><div class="flex items-center gap-3">'
+        + '<img class="size-11 shrink-0 rounded-lg border border-line object-cover" src="' + p.img + '" alt="" loading="lazy" data-ph="' + D.fallbackSVG(p) + '" data-alt2="' + p.img.replace('https://thumb.wikimedia.org/wikipedia/commons/thumb/', 'https://wsrv.nl/?url=thumb.wikimedia.org/wikipedia/commons/thumb/') + '" onerror="' + D.IMG_FALLBACK + '">'
+        + '<div class="min-w-0"><p class="truncate font-medium">' + esc(p.name) + "</p>"
+        + '<p class="text-[12.5px] text-ink3">' + p.unit + " &middot; min grosir " + p.minGrosir + "</p></div></div></td>"
+        + '<td class="td text-ink2">' + esc(D.catLabel(p.cat)) + "</td>"
+        + '<td class="td tabular-nums">' + D.rupiah(p.ecer) + "</td>"
+        + '<td class="td tabular-nums text-ink2">' + D.rupiah(p.grosir) + "</td>"
+        + '<td class="td"><div class="flex items-center gap-1.5">'
+        + '<button class="btn btn-ghost btn-xs" type="button" data-step="-1" data-id="' + p.id + '" aria-label="Kurangi stok ' + p.name + '">&minus;</button>'
+        + '<span class="w-12 text-center tabular-nums font-semibold">' + p.stock + "</span>"
+        + '<button class="btn btn-ghost btn-xs" type="button" data-step="1" data-id="' + p.id + '" aria-label="Tambah stok ' + p.name + '">+</button>'
+        + "</div></td>"
+        + '<td class="td">' + stockBadge(p) + (p.aktif ? "" : ' <span class="badge badge-hidden">nonaktif</span>') + "</td>"
+        + '<td class="td text-right whitespace-nowrap">'
+        + '<button class="btn btn-ghost btn-xs" type="button" data-edit="' + p.id + '">Ubah</button> '
+        + '<button class="btn btn-danger btn-xs" type="button" data-del="' + p.id + '">Hapus</button>'
+        + "</td>";
+      tbody.appendChild(tr);
+
+      var li = document.createElement("li");
+      li.className = "flex flex-col gap-3 p-4";
+      li.innerHTML =
+        '<div class="flex gap-3">'
+        + '<img class="size-14 shrink-0 rounded-lg border border-line object-cover" src="' + p.img + '" alt="" loading="lazy" data-ph="' + D.fallbackSVG(p) + '" data-alt2="' + p.img.replace('https://thumb.wikimedia.org/wikipedia/commons/thumb/', 'https://wsrv.nl/?url=thumb.wikimedia.org/wikipedia/commons/thumb/') + '" onerror="' + D.IMG_FALLBACK + '">'
+        + '<div class="min-w-0 flex-1"><p class="font-medium">' + esc(p.name) + "</p>"
+        + '<p class="text-[12.5px] text-ink3">' + esc(D.catLabel(p.cat)) + " &middot; " + esc(p.unit) + "</p>"
+        + '<div class="mt-1.5 flex flex-wrap items-baseline gap-x-2 text-[14px]"><b class="tabular-nums">' + D.rupiah(p.ecer)
+        + '</b><span class="text-ink3">grosir ' + D.rupiah(p.grosir) + "</span></div></div>"
+        + stockBadge(p)
+        + "</div>"
+        + '<div class="flex flex-wrap items-center gap-2">'
+        + '<button class="btn btn-ghost btn-xs" type="button" data-step="-1" data-id="' + p.id + '">&minus;</button>'
+        + '<span class="tabular-nums font-semibold">stok ' + p.stock + "</span>"
+        + '<button class="btn btn-ghost btn-xs" type="button" data-step="1" data-id="' + p.id + '">+</button>'
+        + '<button class="btn btn-ghost btn-xs ml-auto" type="button" data-edit="' + p.id + '">Ubah</button>'
+        + '<button class="btn btn-danger btn-xs" type="button" data-del="' + p.id + '">Hapus</button>'
+        + "</div>";
+      ul.appendChild(li);
+    });
+
+    renderPaginasi(semua.length, totalHal);
+  }
+
+  /** Tombol halaman: hanya sebagian nomor ditampilkan agar tidak meluber. */
+  function renderPaginasi(jumlah, totalHal) {
+    var wrap = $("#produkPaginasi");
+    if (jumlah <= PER_HAL) { wrap.innerHTML = ""; return; }
+
+    var tombol = function (label, hal, nonaktif, aktif, aria) {
+      return '<button class="btn btn-ghost btn-xs min-w-9" type="button" data-hal="' + hal + '"'
+        + (nonaktif ? " disabled" : "") + (aktif ? ' aria-current="page"' : "")
+        + (aria ? ' aria-label="' + aria + '"' : "") + ">" + label + "</button>";
+    };
+    var nomor = [];
+    for (var i = 1; i <= totalHal; i++) {
+      if (i === 1 || i === totalHal || Math.abs(i - halaman) <= 1) nomor.push(i);
+      else if (nomor[nomor.length - 1] !== "\u2026") nomor.push("\u2026");
+    }
+
+    wrap.innerHTML = '<p class="text-[13px] text-ink3">Menampilkan '
+      + ((halaman - 1) * PER_HAL + 1) + "\u2013" + Math.min(halaman * PER_HAL, jumlah)
+      + " dari " + jumlah + " produk</p>"
+      + '<div class="ml-auto flex items-center gap-1" role="group" aria-label="Navigasi halaman produk">'
+      + tombol("\u2190", halaman - 1, halaman === 1, false, "Halaman sebelumnya")
+      + nomor.map(function (i) {
+          return i === "\u2026"
+            ? '<span class="px-1.5 text-ink3" aria-hidden="true">\u2026</span>'
+            : tombol(String(i), i, false, i === halaman, null);
+        }).join("")
+      + tombol("\u2192", halaman + 1, halaman === totalHal, false, "Halaman berikutnya")
+      + "</div>";
+  }
+
+  function renderCatOptions() {
+    var cats = D.categories.filter(function (c) { return c.id !== "semua"; });
+    var opt = cats.map(function (c) { return '<option value="' + c.id + '">' + c.label + "</option>"; }).join("");
+    $("#fCat").innerHTML = '<option value="semua">Semua kategori</option>' + opt;
+    $("#fCatInput").innerHTML = opt;
+  }
+
+  /* --------------------------- dialog produk --------------------------- */
+  var dlg = $("#productDialog");
+
+  function openDialog(id) {
+    editingId = id || null;
+    var p = id ? D.products.find(function (x) { return x.id === id; }) : null;
+    $("#dialogTitle").textContent = p ? "Ubah produk" : "Tambah produk";
+    $("#dialogSave").textContent = p ? "Simpan perubahan" : "Tambah produk";
+    $("#dialogError").classList.add("hidden");
+
+    $("#fId").value = p ? p.id : "";
+    $("#fName").value = p ? p.name : "";
+    $("#fCatInput").value = p ? p.cat : (D.categories[1] || {}).id;
+    $("#fUnit").value = p ? p.unit : "";
+    $("#fEcer").value = p ? p.ecer : "";
+    $("#fGrosir").value = p ? p.grosir : "";
+    $("#fMinGrosir").value = p ? p.minGrosir : 1;
+    $("#fStok").value = p ? p.stock : 0;
+    $("#fMinStock").value = p ? p.minStock : 5;
+    $("#fImg").value = p ? p.img : "";
+    $("#fAlt").value = p ? p.alt : "";
+    $("#fAktif").checked = p ? !!p.aktif : true;
+
+    dlg.showModal();
+    $("#fName").focus();
+  }
+
+  function nextId() {
+    var n = 0;
+    D.products.forEach(function (p) {
+      var m = /^p(\d+)$/.exec(p.id);
+      if (m) n = Math.max(n, Number(m[1]));
+    });
+    return "p" + String(n + 1).padStart(2, "0");
+  }
+
+  $("#productForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var err = $("#dialogError");
+    var name = $("#fName").value.trim();
+    var img = $("#fImg").value.trim();
+    var ecer = Number($("#fEcer").value);
+    var grosir = Number($("#fGrosir").value);
+
+    if (!name) { err.textContent = "Nama produk wajib diisi."; err.classList.remove("hidden"); return; }
+    if (!img) { err.textContent = "URL gambar wajib diisi supaya kartu produk tidak kosong."; err.classList.remove("hidden"); return; }
+    if (grosir > ecer) { err.textContent = "Harga grosir sebaiknya tidak lebih tinggi dari harga eceran."; err.classList.remove("hidden"); return; }
+
+    var payload = {
+      id: $("#fId").value || nextId(),
+      cat: $("#fCatInput").value,
+      name: name,
+      unit: $("#fUnit").value.trim() || "pcs",
+      ecer: ecer,
+      grosir: grosir,
+      minGrosir: Math.max(1, Number($("#fMinGrosir").value) || 1),
+      stock: Math.max(0, Number($("#fStok").value) || 0),
+      minStock: Math.max(0, Number($("#fMinStock").value) || 0),
+      img: img,
+      alt: $("#fAlt").value.trim() || name,
+      aktif: $("#fAktif").checked
+    };
+
+    if (editingId) {
+      var i = D.products.findIndex(function (x) { return x.id === editingId; });
+      D.products[i] = payload;
+    } else {
+      D.products.push(payload);
+    }
+    D.save();
+    dlg.close();
+    refresh();
+    toast((editingId ? "Produk diperbarui: " : "Produk ditambahkan: ") + payload.name);
+  });
+
+  $("#dialogClose").addEventListener("click", function () { dlg.close(); });
+  $("#dialogCancel").addEventListener("click", function () { dlg.close(); });
+  $("#btnAdd").addEventListener("click", function () { openDialog(null); });
+
+  /* ------------------------------ aksi tabel --------------------------- */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-step],[data-edit],[data-del],[data-restock]");
+    if (!b) return;
+
+    if (b.dataset.step) {
+      var p1 = D.products.find(function (x) { return x.id === b.dataset.id; });
+      p1.stock = Math.max(0, p1.stock + Number(b.dataset.step));
+      D.save();
+      refresh();
+      toast("Stok " + p1.name + ": " + p1.stock + " " + p1.unit + ".");
+      return;
+    }
+    if (b.dataset.restock) {
+      var p2 = D.products.find(function (x) { return x.id === b.dataset.restock; });
+      p2.stock += 10;
+      D.save();
+      refresh();
+      toast("Stok " + p2.name + " ditambah 10 " + p2.unit + ".");
+      return;
+    }
+    if (b.dataset.edit) { openDialog(b.dataset.edit); return; }
+    if (b.dataset.del) {
+      var p3 = D.products.find(function (x) { return x.id === b.dataset.del; });
+      if (!confirm("Hapus produk \"" + p3.name + "\" dari katalog?")) return;
+      D.products = D.products.filter(function (x) { return x.id !== p3.id; });
+      D.save();
+      refresh();
+      toast("Produk dihapus: " + p3.name, "err");
+    }
+  });
+
+  /* -------------------------------- ulasan ----------------------------- */
+  function renderUlasan() {
+    var list = D.reviews.filter(function (r) {
+      return filters.status === "semua" || r.status === filters.status;
+    });
+    $('[data-count="ulasanTampil"]').textContent = list.length + " ulasan";
+    var pending = D.reviews.filter(function (r) { return r.status === "pending"; }).length;
+    $('[data-count="ulasan"]').textContent = pending || D.reviews.length;
+
+    var ul = $('[data-list="ulasan"]');
+    ul.innerHTML = "";
+    if (!list.length) {
+      ul.innerHTML = '<li class="px-4 py-8 text-center text-ink3">Belum ada ulasan pada filter ini.</li>';
+      return;
+    }
+
+    list.forEach(function (r) {
+      var st = r.status === "tayang" ? "badge-published" : r.status === "pending" ? "badge-pending" : "badge-hidden";
+      var label = r.status === "tayang" ? "Tayang" : r.status === "pending" ? "Menunggu" : "Disembunyikan";
+      var li = document.createElement("li");
+      li.className = "flex flex-col gap-3 p-4 md:flex-row md:items-start";
+      li.innerHTML =
+        '<div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2">'
+        + '<b class="text-[14.5px] font-semibold">' + esc(r.name) + "</b>"
+        + '<span class="badge ' + st + '">' + label + "</span>"
+        + '<span class="text-[13.5px] text-ink3">' + r.stars + " bintang</span></div>"
+        + '<p class="mt-1.5 text-[14.5px] text-ink2">' + esc(r.text) + "</p>"
+        + '<p class="mt-1 text-[12.5px] text-ink3">' + esc(r.role || "Pelanggan") + "</p></div>"
+        + '<div class="flex shrink-0 flex-wrap gap-1.5">'
+        + (r.status !== "tayang" ? '<button class="btn btn-ok btn-xs" type="button" data-review="tayang" data-id="' + r.id + '">Tayangkan</button>' : "")
+        + (r.status !== "sembunyi" ? '<button class="btn btn-ghost btn-xs" type="button" data-review="sembunyi" data-id="' + r.id + '">Sembunyikan</button>' : "")
+        + '<button class="btn btn-danger btn-xs" type="button" data-review="hapus" data-id="' + r.id + '">Hapus</button>'
+        + "</div>";
+      ul.appendChild(li);
+    });
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-review]");
+    if (!b) return;
+    var id = b.dataset.id;
+    if (b.dataset.review === "hapus") {
+      D.reviews = D.reviews.filter(function (r) { return r.id !== id; });
+    } else {
+      var r = D.reviews.find(function (x) { return x.id === id; });
+      r.status = b.dataset.review;
+    }
+    D.save();
+    refresh();
+  });
+
+  $("#reviewForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("#rvName").value.trim();
+    var text = $("#rvText").value.trim();
+    if (!name || !text) { toast("Nama dan isi ulasan perlu diisi dulu.", "err"); return; }
+    D.reviews.unshift({
+      id: "r" + Date.now().toString(36),
+      name: name,
+      stars: Number($("#rvStars").value),
+      text: text,
+      role: "Ditambahkan admin",
+      status: "tayang"
+    });
+    D.save();
+    e.target.reset();
+    $('[data-count="ulasan"]').textContent = D.reviews.length;
+    refresh();
+    toast("Ulasan ditambahkan dan langsung tayang.");
+  });
+
+  /* ------------------------------- info toko --------------------------- */
+  function fillSettings() {
+    var s = D.settings;
+    $("#sNama").value = s.nama;
+    $("#sWa").value = s.wa;
+    $("#sTelepon").value = s.telepon;
+    $("#sUpdated").value = s.updated;
+    $("#sAlamat").value = s.alamat;
+    $("#sMaps").value = s.maps;
+    $("#sMinAntar").value = s.minAntar;
+    $("#sGratisAntar").value = s.gratisAntar;
+  }
+
+  $("#settingsForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var wa = $("#sWa").value.replace(/\D/g, "");
+    if (wa.startsWith("0")) wa = "62" + wa.slice(1);
+    if (wa.length < 10) { toast("Nomor WhatsApp tampak tidak valid.", "err"); return; }
+
+    Object.assign(D.settings, {
+      nama: $("#sNama").value.trim() || D.settings.nama,
+      wa: wa,
+      telepon: $("#sTelepon").value.trim(),
+      updated: $("#sUpdated").value || D.settings.updated,
+      alamat: $("#sAlamat").value.trim(),
+      maps: $("#sMaps").value.trim(),
+      minAntar: Number($("#sMinAntar").value) || 0,
+      gratisAntar: Number($("#sGratisAntar").value) || 0
+    });
+    D.save();
+    fillSettings();
+    toast("Info toko disimpan. Tombol WhatsApp di storefront langsung memakai nomor baru.");
+  });
+
+  $("#btnSyncCopy").addEventListener("click", function () {
+    D.save();
+    toast("Contoh pesan WhatsApp mengikuti info toko yang tersimpan.");
+  });
+
+  /* --------------------------- ekspor / impor -------------------------- */
+  $("#btnExport").addEventListener("click", function () {
+    var data = JSON.stringify({ settings: D.settings, products: D.products, reviews: D.reviews }, null, 2);
+    var url = URL.createObjectURL(new Blob([data], { type: "application/json" }));
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "berkah-jaya-" + new Date().toISOString().slice(0, 10) + ".json";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  $("#btnImport").addEventListener("click", function () { $("#fileImport").click(); });
+  $("#fileImport").addEventListener("change", function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(reader.result);
+        if (!data.products || !data.products.length) throw new Error("tidak ada daftar produk");
+        Object.assign(D.settings, data.settings || {});
+        D.products = data.products;
+        if (data.reviews) D.reviews = data.reviews;
+        D.save();
+        fillSettings();
+        refresh();
+        toast("Data berhasil diimpor: " + D.products.length + " produk.");
+      } catch (err) {
+        toast("Berkas tidak bisa dibaca: " + err.message, "err");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  });
+
+  $("#btnReset").addEventListener("click", function () {
+    if (!confirm("Kembalikan semua produk, ulasan, dan info toko ke data contoh?")) return;
+    D.reset();
+    fillSettings();
+    refresh();
+    toast("Data dikembalikan ke contoh awal.", "err");
+  });
+
+  /* -------------------------------- filter ----------------------------- */
+  $("#q").addEventListener("input", function () { filters.q = this.value; halaman = 1; renderProduk(); });
+  $("#fCat").addEventListener("change", function () { filters.cat = this.value; halaman = 1; renderProduk(); });
+  $("#fStock").addEventListener("change", function () { filters.stock = this.value; halaman = 1; renderProduk(); });
+  $("#fStatus").addEventListener("change", function () { filters.status = this.value; renderUlasan(); });
+
+  $("#produkPaginasi").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-hal]");
+    if (!b || b.disabled) return;
+    halaman = Number(b.dataset.hal);
+    renderProduk();
+    $('[data-section="produk"]').scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  /* -------------------------------- boot ------------------------------- */
+  /* --------------------------- analitik penjualan ------------------------ */
+  /* Semua angka dihitung ulang dari state.sales, jadi tidak ada nilai yang
+     "disimpan ganda" dan bisa berbeda dengan riwayat transaksi. */
+
+  var OMZ = { omzetHari: "rupiah", omzetBulan: "rupiah", trx: "angka", trxHari: "hari", kritis: "angka" };
+  var CHANNEL = { offline: "Toko offline", whatsapp: "WhatsApp" };
+
+  function isiStats(obj) {
+    Object.keys(OMZ).forEach(function (k) {
+      var el = $('[data-stat2="' + k + '"]');
+      if (!el) return;
+      var v = obj[k];
+      el.textContent = OMZ[k] === "rupiah" ? D.rupiah(v)
+        : OMZ[k] === "hari" ? v + " hari ini" : String(v);
+    });
+  }
+
+  /** Diagram batang omzet per hari + sumbu nilai, digambar sebagai SVG langsung. */
+  function gambarTren(tren) {
+    var svg = $("#trenChart");
+    var L = 58, R = 14, T = 18, B = 34;
+    var W = 660, H = 220;
+    var lw = W - L - R, lh = H - T - B;
+
+    var max = Math.max.apply(null, tren.map(function (t) { return t.omzet; }));
+    if (max <= 0) max = 100000;                       // skala wajar walau data kosong
+    var atas = Math.ceil(max / 50000) * 50000;        // bulatkan ke atas 50 rb
+
+    var jarak = lw / tren.length;
+    var lebar = Math.max(2, jarak - 4);
+    var y = function (v) { return T + lh - (v / atas) * lh; };
+
+    var s = [];
+    for (var g = 0; g <= 4; g++) {
+      var nilai = (atas / 4) * g, yy = y(nilai);
+      s.push('<line x1="' + L + '" y1="' + yy + '" x2="' + (W - R) + '" y2="' + yy +
+        '" stroke="var(--line)" stroke-width="1"' + (g ? ' stroke-dasharray="4 4"' : '') + '/>');
+      s.push('<text x="' + (L - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="11" fill="var(--ink3)">' +
+        (nilai >= 1000000 ? (nilai / 1000000).toFixed(1).replace(".0", "") + "jt"
+          : nilai > 0 ? Math.round(nilai / 1000) + "rb" : "0") + "</text>");
+    }
+    tren.forEach(function (t, i) {
+      if (!t.omzet) return;
+      var x = L + i * jarak + (jarak - lebar) / 2;
+      var tinggi = Math.max(2, T + lh - y(t.omzet));
+      s.push('<rect x="' + x.toFixed(1) + '" y="' + y(t.omzet).toFixed(1) + '" width="' + lebar.toFixed(1) +
+        '" height="' + tinggi.toFixed(1) + '" rx="2" fill="var(--brand)"><title>' +
+        t.tanggal + ": " + D.rupiah(t.omzet) + "</title></rect>");
+    });
+    tren.forEach(function (t, i) {
+      if (i % 5 !== 0 && i !== tren.length - 1) return;
+      var x = L + i * jarak + jarak / 2;
+      s.push('<text x="' + x.toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="11" fill="var(--ink3)">' +
+        t.tanggal.slice(8) + "/" + t.tanggal.slice(5, 7) + "</text>");
+    });
+    s.push('<line x1="' + L + '" y1="' + (T + lh) + '" x2="' + (W - R) + '" y2="' + (T + lh) +
+      '" stroke="var(--line2)" stroke-width="1"/>');
+    svg.innerHTML = s.join("");
+    svg.setAttribute("aria-label", "Omzet harian 30 hari terakhir, nilai tertinggi " + D.rupiah(max) + ".");
+    return atas;
+  }
+
+  /** Bentuk lebar untuk dibaca pembaca layar (grafiknya hiasan, tabelnya data). */
+  function tabelTren(tren) {
+    var rows = tren.map(function (t) {
+      return '<tr><td class="td">' + t.tanggal + '</td><td class="td text-right tabular-nums">' + D.rupiah(t.omzet) + "</td></tr>";
+    }).join("");
+    $("#trenTabel").innerHTML = '<table class="w-full border-collapse"><caption class="sr-only">Omzet tiap hari</caption>' +
+      '<thead class="bg-surface2"><tr><th class="th">Tanggal</th><th class="th text-right">Omzet</th></tr></thead>' +
+      '<tbody class="divide-y divide-line">' + rows + "</tbody></table>";
+  }
+
+  function daftarKosong(pesan) {
+    return '<li class="px-4.5 py-6 text-[13.5px] text-ink3">' + esc(pesan) + "</li>";
+  }
+
+  function barisProduk(item, kanan) {
+    return '<li class="flex items-center justify-between gap-3 px-4.5 py-3">' +
+      '<span class="min-w-0 truncate text-[14px]">' + esc(item.nama) + "</span>" +
+      '<span class="shrink-0 text-[13.5px] tabular-nums text-ink2">' + kanan + "</span></li>";
+  }
+
+  function renderAnalitik() {
+    var s = D.ringkasPenjualan();
+    isiStats(s);
+    $("#trenToggle").setAttribute("aria-expanded", String(!$("#trenTabel").hidden));
+
+    var atas = gambarTren(s.tren);
+    tabelTren(s.tren);
+    var hariAda = s.tren.filter(function (t) { return t.omzet > 0; }).length;
+    var puncak = Math.max.apply(null, s.tren.map(function (t) { return t.omzet; }));
+    $('[data-stat2="trenSub"]').textContent = hariAda
+      ? hariAda + " hari ada penjualan, tertinggi " + D.rupiah(puncak)
+      : "belum ada penjualan, skala " + D.rupiah(atas);
+
+    $('[data-list2="terlaris"]').innerHTML = s.terlaris.length
+      ? s.terlaris.map(function (p) { return barisProduk(p, p.qty + " terjual | " + D.rupiah(p.omzet)); }).join("")
+      : daftarKosong("Belum ada penjualan tercatat.");
+
+    $('[data-list2="tidakGerak"]').innerHTML = s.tidakGerak.length
+      ? s.tidakGerak.map(function (p) {
+          return barisProduk(p, (p.terakhir ? "terakhir " + p.terakhir : "belum pernah") + " | stok " + p.stok);
+        }).join("")
+      : daftarKosong(D.sales.length ? "Semua produk bergerak dalam 14 hari terakhir." : "Isi penjualan dulu supaya daftar ini bermakna.");
+
+    renderRiwayatPenjualan();
+  }
+
+  function renderRiwayatPenjualan() {
+    var dari = $("#slDari").value, sampai = $("#slSampai").value;
+    var list = D.sales.slice().sort(function (a, b) { return a.tanggal < b.tanggal ? 1 : -1; })
+      .filter(function (s) { return (!dari || s.tanggal >= dari) && (!sampai || s.tanggal <= sampai); });
+
+    $('[data-list2="sales"]').innerHTML = list.length ? list.map(function (s) {
+      var barang = (s.items || []).map(function (it) {
+        var p = D.products.find(function (x) { return x.id === it.produk; });
+        return it.qty + "x " + (p ? p.name : it.produk);
+      }).join(", ");
+      return '<tr><td class="td font-semibold">' + esc(s.invoice) + "</td>" +
+        '<td class="td tabular-nums">' + esc(s.tanggal) + "</td>" +
+        '<td class="td">' + esc(CHANNEL[s.channel] || s.channel) + "</td>" +
+        '<td class="td">' + (s.pelanggan ? esc(s.pelanggan) : '<span class="text-ink3">-</span>') + "</td>" +
+        '<td class="td max-w-[280px] truncate" title="' + esc(barang) + '">' + esc(barang) + "</td>" +
+        '<td class="td text-right tabular-nums font-semibold">' + D.rupiah(s.total) + "</td>" +
+        '<td class="td text-right"><button class="btn btn-ghost btn-xs" type="button" data-hapus-jual="' + esc(s.id) + '">Hapus</button></td></tr>';
+    }).join("") : '<tr><td class="td text-ink3" colspan="7">Belum ada penjualan' +
+      ((dari || sampai) ? " pada rentang tanggal itu." : ".") + "</td></tr>";
+
+    var total = list.reduce(function (a, s) { return a + (Number(s.total) || 0); }, 0);
+    $('[data-stat2="salesSub"]').textContent = list.length
+      ? list.length + " transaksi ditampilkan, total " + D.rupiah(total) + "."
+      : "Tidak ada transaksi ditampilkan.";
+  }
+
+  var pilihanProduk = D.products.filter(function (p) { return p.aktif; });
+
+  function opsiProduk(terpilih) {
+    return pilihanProduk.map(function (p) {
+      return '<option value="' + esc(p.id) + '"' + (p.id === terpilih ? " selected" : "") + ">" + esc(p.name) + "</option>";
+    }).join("");
+  }
+
+  function barisBarang(it) {
+    var w = document.createElement("div");
+    w.className = "grid gap-2 border-b border-line py-3 first:pt-0 last:border-0 last:pb-0 sm:grid-cols-[1fr_5.5rem_6.5rem_auto]";
+    w.dataset.row = "1";
+    w.innerHTML =
+      '<label class="sr-only">Produk</label>' +
+      '<select class="field-input !py-2" data-f="produk" required>' + opsiProduk(it && it.produk) + "</select>" +
+      '<label class="sr-only">Tipe harga</label>' +
+      '<select class="field-input !py-2" data-f="tipe">' +
+        '<option value="ecer"' + (it && it.tipe === "grosir" ? "" : " selected") + ">Eceran</option>" +
+        '<option value="grosir"' + (it && it.tipe === "grosir" ? " selected" : "") + ">Grosir</option>" +
+      "</select>" +
+      '<label class="sr-only">Jumlah</label>' +
+      '<input class="field-input !py-2" data-f="qty" type="number" min="1" step="1" value="' + ((it && it.qty) || 1) + '" required>' +
+      '<button class="btn btn-ghost btn-xs" type="button" data-hapus-baris="1">Hapus</button>';
+    return w;
+  }
+
+  function syncBaris() {
+    if (!$("#slItems").querySelector("[data-row]")) $("#slItems").appendChild(barisBarang(null));
+    hitungTotalJual();
+  }
+
+  function hitungTotalJual() {
+    var total = 0;
+    $$("#slItems [data-row]").forEach(function (r) {
+      var id = $('[data-f="produk"]', r).value;
+      var tipe = $('[data-f="tipe"]', r).value;
+      var qty = Math.max(0, Number($('[data-f="qty"]', r).value) || 0);
+      total += qty * D.hargaSatuan(id, tipe);
+    });
+    $("#slTotal").textContent = D.rupiah(total);
+    return total;
+  }
+
+  $("#slAddRow").addEventListener("click", function () {
+    $("#slItems").appendChild(barisBarang(null));
+    syncBaris();
+  });
+
+  $("#slItems").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-hapus-baris]");
+    if (!b) return;
+    b.closest("[data-row]").remove();
+    syncBaris();
+  });
+
+  $("#slItems").addEventListener("input", hitungTotalJual);
+  $("#slItems").addEventListener("change", hitungTotalJual);
+
+  $("#saleForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var items = $$("#slItems [data-row]").map(function (r) {
+      return {
+        produk: $('[data-f="produk"]', r).value,
+        tipe: $('[data-f="tipe"]', r).value,
+        qty: $('[data-f="qty"]', r).value
+      };
+    });
+    var sale = D.buatPenjualan({
+      tanggal: $("#slTanggal").value,
+      channel: $("#slChannel").value,
+      pelanggan: $("#slPelanggan").value,
+      kasir: "Admin toko",
+      items: items
+    });
+    if (sale.error) { toast(sale.error, "err"); return; }
+    D.save();
+    var tanggal = $("#slTanggal").value;
+    this.reset();
+    $("#slTanggal").value = tanggal;
+    $("#slItems").innerHTML = "";
+    $("#slItems").appendChild(barisBarang(null));
+    renderAnalitik();
+    renderRingkasan();
+    toast("Penjualan " + sale.invoice + " tersimpan, total " + D.rupiah(sale.total) + ".");
+  });
+
+  $("#slDari").addEventListener("change", renderRiwayatPenjualan);
+  $("#slSampai").addEventListener("change", renderRiwayatPenjualan);
+
+  $('[data-list2="sales"]').addEventListener("click", function (e) {
+    var b = e.target.closest("[data-hapus-jual]");
+    if (!b) return;
+    var id = b.dataset.hapusJual;
+    if (!confirm("Hapus transaksi ini dari riwayat?")) return;
+    D.sales = D.sales.filter(function (s) { return s.id !== id; });
+    D.save();
+    renderAnalitik();
+    renderRingkasan();
+    toast("Satu transaksi dihapus.");
+  });
+
+  $("#slExport").addEventListener("click", function () {
+    if (!D.sales.length) { toast("Belum ada penjualan untuk diekspor.", "err"); return; }
+    var blob = new Blob(["\ufeff" + D.penjualanCSV()], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "penjualan-berkah-jaya-" + D.tanggalLokal(new Date()) + ".csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast("Berkas CSV diunduh.");
+  });
+
+  var trenToggle = $("#trenToggle");
+  trenToggle.addEventListener("click", function () {
+    var t = $("#trenTabel");
+    t.hidden = !t.hidden;
+    this.setAttribute("aria-expanded", String(!t.hidden));
+    this.textContent = t.hidden ? "Tabel" : "Sembunyikan";
+  });
+
+  /* ------------------------------ halaman AHP ---------------------------- */
+  /* Perhitungannya di ahp.js; di sini hanya tampilan dan penyuntingan. */
+
+  function kodeKriteria(i) {
+    var k = D.ahpKriteria[i];
+    return k ? (k.kode || "C" + (i + 1)) + ". " + k.nama : "?";
+  }
+
+  /* -------------------- panduan contoh perhitungan AHP ------------------- */
+  /* Ditulis sebagai cerita angka kecil supaya pembaca yang belum pernah
+     mendengar "eigenvector" tetap bisa mengikuti sampai hasil akhir. */
+  function renderAhpPanduan() {
+    var c = D.ahpContoh;
+    var nama = c.kriteria;
+    // Susun matriks dari daftar nilai segitiga atas.
+    var pasangan = [];
+    var k = 0;
+    for (var i = 0; i < nama.length; i++) {
+      for (var j = i + 1; j < nama.length; j++) { pasangan.push({ i: i, j: j, nilai: c.nilai[k++] }); }
+    }
+    var A = AHP.buildMatrix(nama.length, pasangan);
+    var h = AHP.hitungAHP(A);
+    var ah = AHP.rangking(h.weights, { A: c.penilaian[0], B: c.penilaian[1], C: c.penilaian[2] });
+    var urutBobot = nama.map(function (n, i) { return { nama: n, bobot: h.weights[i] }; })
+      .sort(function (a, b) { return b.bobot - a.bobot; });
+
+    var tbl = function (baris) {
+      return '<div class="overflow-x-auto"><table class="w-full border-collapse text-[13px]">'
+        + baris.map(function (r, idx) {
+            var sel = idx === 0 ? "th" : "td";
+            return "<tr>" + r.map(function (x) {
+              return "<" + sel + ' class="' + (idx === 0 ? "th" : "td tabular-nums") + '">' + x + "</" + sel + ">";
+            }).join("") + "</tr>";
+          }).join("") + "</table></div>";
+    };
+
+    var langkah = [
+      ["1", "Tentukan apa yang dibandingkan", "Misalnya kita mau memilih barang mana yang paling layak dipajang di depan toko. Yang dinilai: Harga, Kualitas, dan Pelayanan."],
+      ["2", "Bandingkan dua-duanya, satu per satu", "Isi tabel dengan angka 1-9. Contoh: 3 artinya \u201cbaris " + nama[0] + " sedikit lebih unggul daripada " + nama[1]
+        + "\u201d, 5 artinya \u201clebih unggul\u201d, 9 artinya \u201cjauh lebih unggul\u201d. Kolom sebaliknya otomatis berisi 1\u00f7angkanya."],
+      ["3", "Ubah tabel itu jadi satu baris bobot (%)", "Angka-angka tadi diringkas jadi tiga persen yang jumlahnya 100%: "
+        + urutBobot.map(function (o) { return o.nama + " " + (o.bobot * 100).toFixed(1) + "%"; }).join(", ")
+        + ". Artinya menurut jawaban kita, " + urutBobot[0].nama + " paling menentukan, disusul "
+        + urutBobot[1].nama + ", dan " + urutBobot[2].nama + " paling kecil pengaruhnya."],
+      ["4", "Cek dulu, jangan-jangan jawabannya saling bertentangan", "CR = " + h.cr.toFixed(3)
+        + " (batas 0,1). Karena di bawah batas, jawaban kita tidak bertentangan dengan dirinya sendiri dan bobotnya boleh dipakai. Kalau CR di atas 0,1, yang diperbaiki bukan rumusnya, melainkan jawaban yang saling bertentangan tadi."],
+      ["5", "Nilai tiap pilihan dengan bobot tadi", "Setiap barang diberi nilai 1-9 per kriteria. Lalu kalikan: (nilai \u00d7 bobot) dijumlahkan. Yang jumlahnya paling besar, itulah peringkat 1."],
+      ["6", "Hasil akhir contoh", ah.map(function (x) {
+        return "Barang " + x.id + " nilai akhirnya " + x.skor.toFixed(2) + (x.peringkat === 1 ? " (peringkat 1)" : "");
+      }).join("; ") + ". Perhatikan: menang di satu kriteria saja tidak cukup, karena bobotnya ikut menentukan."]
+    ];
+
+    $("#ahpPanduanIsi").innerHTML = langkah.map(function (l) {
+      return '<div class="flex gap-3"><span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-brandsoft text-[12px] font-bold text-brandink dark:text-brand">'
+        + l[0] + '</span><div><p class="font-semibold text-ink">' + l[1] + '</p><p class="mt-0.5">' + l[2] + "</p></div></div>";
+    }).join("")
+      + '<div class="rounded-lg border border-line bg-bg p-3"><p class="mb-2 font-semibold text-ink">Tabel angka contoh (Harga, Kualitas, Pelayanan)</p>'
+      + tbl([["", nama[0], nama[1], nama[2]]].concat(A.map(function (r, i) {
+          return [nama[i]].concat(r.map(function (x) { return (x >= 1 ? x.toFixed(0) : "1/" + (1 / x).toFixed(0)); }));
+        })))
+      + '<p class="mt-2.5 mb-2 font-semibold text-ink">Nilai tiga pilihan contoh (skala 1-9)</p>'
+      + tbl([["Pilihan", nama[0], nama[1], nama[2]]].concat(c.penilaian.map(function (r, i) {
+          return ["Barang " + "ABC"[i]].concat(r.map(String));
+        })))
+      + "</div>"
+      + '<p class="text-ink3">Angka pada panduan ini hanya contoh supaya langkahnya jelas. Angka yang dipakai perhitungan halaman ini adalah matriks di bagian bawah, dan itu pun masih nilai awal \u2014 ganti dengan hasil kuesioner Anda.</p>';
+  }
+
+  function renderAHP() {
+    var h = D.ahpHasil();
+    var badge = $('[data-badge="ahp-besar"]');
+
+    if (h.error) {
+      badge.textContent = "Tidak bisa dihitung";
+      badge.className = "badge badge-out";
+      $('[data-ahp="lambda"]').textContent = "-";
+      $('[data-ahp="ci"]').textContent = "-";
+      $('[data-ahp="cr"]').textContent = "-";
+      $("#ahpPesan").textContent = h.error;
+      return;
+    }
+
+    $('[data-ahp="lambda"]').textContent = h.lambdaMax.toFixed(4);
+    $('[data-ahp="ci"]').textContent = h.ci.toFixed(4);
+    $('[data-ahp="cr"]').textContent = h.cr.toFixed(4);
+    badge.textContent = h.consistent ? "Konsisten" : "Tidak konsisten";
+    badge.className = "badge " + (h.consistent ? "badge-ready" : "badge-out");
+    $("#ahpPesan").textContent = h.consistent
+      ? "CR " + h.cr.toFixed(4) + " <= 0,1, jadi bobot prioritas di bawah boleh dipakai."
+      : "CR " + h.cr.toFixed(4) + " > 0,1. Perbaiki dulu nilai yang paling bertentangan; hasil perangkingan belum sah dilaporkan.";
+
+    var cukup = D.ahpAlternatif.length >= 2 && D.ahpKriteria.length >= 2;
+    $("#ahpContoh").hidden = !cukup;
+    if (cukup) {
+      var rk = D.ahpRangking();
+      if (!rk.error) {
+        $("#ahpContoh").textContent = "Peringkat saat ini: " + rk.rangking.slice(0, 3).map(function (x) {
+          return (x.nama || x.id) + " (" + x.skor.toFixed(3) + ")";
+        }).join(", ") + ". Angka ini hasil perhitungan dari nilai yang Anda isi, bukan data contoh.";
+      }
+    }
+
+    $('[data-badge="ahp"]').textContent = h.cr.toFixed(3);
+    $('[data-badge="ahp"]').className = "ml-auto rounded-full px-2 py-0.5 text-xs tabular-nums "
+      + (h.consistent ? "bg-brandsoft text-brandink dark:text-brand" : "bg-dangersoft text-danger");
+
+    $("#ahpAltHead").innerHTML = '<tr><th class="th">Alternatif</th>' +
+      D.ahpKriteria.map(function (k, i) {
+        return '<th class="th" title="' + esc(k.desc || "") + '">' + esc(k.kode || "C" + (i + 1)) + "</th>";
+      }).join("") + '<th class="th"></th></tr>';
+
+    renderAhpPasangan();
+    renderAhpBobot(h);
+    renderAhpAlternatif();
+    renderAhpRanking();
+    renderAhpTeks(h);
+  }
+
+  function renderAhpPasangan() {
+    var n = D.ahpKriteria.length;
+    var kotak = $("#ahpPairs");
+    if (n < 2) {
+      kotak.innerHTML = '<p class="px-4.5 py-6 text-[13.5px] text-ink3">Butuh minimal dua kriteria.</p>';
+      return;
+    }
+    kotak.innerHTML = "";
+    D.ahpPairwise.forEach(function (p) {
+      var w = document.createElement("div");
+      w.className = "grid items-center gap-x-3 gap-y-2 px-4.5 py-3 lg:grid-cols-[1fr_auto_1fr]";
+      w.innerHTML =
+        '<span class="text-[14px] font-medium lg:text-right">' + esc(kodeKriteria(p.i)) + "</span>" +
+        '<input class="w-full accent-brand lg:w-56" type="range" min="-9" max="9" step="1" value="' + skalaKeSlider(p.nilai) +
+          '" data-pair="' + p.i + "-" + p.j + '" aria-label="Perbandingan ' + esc(D.ahpKriteria[p.i].nama) +
+          " dengan " + esc(D.ahpKriteria[p.j].nama) + '">' +
+        '<span class="text-[14px] font-medium">' + esc(kodeKriteria(p.j)) + "</span>" +
+        '<p class="text-[13px] text-ink3 lg:col-span-3 lg:text-center" data-lab="' + p.i + "-" + p.j + '">' +
+          esc(labelPasangan(p)) + "</p>";
+      kotak.appendChild(w);
+    });
+  }
+
+  /* Slider -9..9 dibaca sebagai pangkat 2, jadi seluruh skala Saaty
+     (1/512 .. 512) bisa dijangkau termasuk nilai pecahan seperti 2 dan 1/3. */
+  function skalaKeSlider(v) {
+    v = Number(v);
+    if (!(v > 0)) return 0;
+    for (var k = -9; k <= 9; k++) {
+      if (Math.abs(Math.pow(2, k) - v) < 1e-9) return k;
+    }
+    return 0;
+  }
+
+  function sliderKeSkala(k) { return Number(k) === 0 ? 1 : Math.pow(2, Number(k)); }
+
+  function labelPasangan(p) {
+    var a = D.ahpKriteria[p.i], b = D.ahpKriteria[p.j];
+    if (!a || !b) return "";
+    if (Math.abs(p.nilai - 1) < 1e-9) return a.nama + " dan " + b.nama + " sama penting (1).";
+    return p.nilai > 1
+      ? a.nama + " " + bulat2(p.nilai) + "x lebih penting dari " + b.nama + "."
+      : b.nama + " " + bulat2(1 / p.nilai) + "x lebih penting dari " + a.nama + ".";
+  }
+
+  function bulat2(v) { return Number(v).toFixed(2).replace(/\.?0+$/, ""); }
+
+  function renderAhpBobot(h) {
+    var w = h.weights || [];
+    var urut = w.map(function (v, i) { return { v: v, i: i }; }).sort(function (a, b) { return b.v - a.v; });
+    $('[data-list2="bobot"]').innerHTML = urut.map(function (x) {
+      var k = D.ahpKriteria[x.i] || {};
+      var persen = (x.v * 100).toFixed(1);
+      return '<li class="px-4.5 py-3">' +
+        '<div class="flex items-baseline justify-between gap-3">' +
+          '<span class="text-[14px] font-medium">' + esc(kodeKriteria(x.i)) + "</span>" +
+          '<span class="text-[14px] tabular-nums font-semibold">' + x.v.toFixed(4) + " | " + persen + "%</span>" +
+        "</div>" +
+        '<div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface3">' +
+          '<div class="h-full rounded-full bg-brand" style="width:' + persen + '%"></div>' +
+        "</div>" +
+        '<p class="mt-1 text-[12.5px] text-ink3">' + esc(k.desc || "") + "</p></li>";
+    }).join("");
+  }
+
+  function renderAhpAlternatif() {
+    var n = D.ahpKriteria.length;
+    $("#ahpAltBody").innerHTML = D.ahpAlternatif.map(function (a) {
+      var sel = [];
+      for (var c = 0; c < n; c++) {
+        sel.push('<td class="td text-right"><input class="field-input !w-16 !px-2 !py-1 text-right tabular-nums" ' +
+          'type="number" min="1" max="9" step="1" value="' + (Number(a.nilai[c]) || 1) + '" ' +
+          'data-alt="' + esc(a.id) + '" data-c="' + c + '" ' +
+          'aria-label="Nilai ' + esc(a.nama) + " untuk " + esc((D.ahpKriteria[c] || {}).nama || "kriteria") + '"></td>');
+      }
+      return "<tr>" +
+        '<td class="td"><input class="field-input !w-40 !py-1" type="text" value="' + esc(a.nama) + '" data-altnama="' + esc(a.id) + '" aria-label="Nama alternatif"></td>' +
+        sel.join("") +
+        '<td class="td text-right"><button class="btn btn-ghost btn-xs" type="button" data-hapus-alt="' + esc(a.id) + '">Hapus</button></td>' +
+        "</tr>";
+    }).join("");
+  }
+
+  function renderAhpRanking() {
+    var h = D.ahpRangking();
+    $("#ahpRankHead").innerHTML = '<tr><th class="th">#</th><th class="th">Alternatif</th>' +
+      (h.error ? "" : '<th class="th text-right">Nilai akhir</th>') + "</tr>";
+    if (h.error) {
+      $("#ahpRankBody").innerHTML = '<tr><td class="td text-ink3" colspan="2">' + esc(h.error) + "</td></tr>";
+      return;
+    }
+    var maks = h.rangking.length ? h.rangking[0].skor : 1;
+    $("#ahpRankBody").innerHTML = h.rangking.map(function (x, i) {
+      var bd = i === 0 ? "badge-ready" : i === 1 ? "badge-low" : "badge-out";
+      return "<tr>" +
+        '<td class="td"><span class="badge ' + bd + '">' + x.peringkat + "</span></td>" +
+        '<td class="td">' + esc(x.nama || x.id) + "</td>" +
+        '<td class="td text-right"><span class="tabular-nums font-semibold">' + x.skor.toFixed(4) + "</span>" +
+          '<span class="ml-2 inline-block h-1.5 w-16 overflow-hidden rounded-full bg-surface3 align-middle">' +
+            '<span class="block h-full rounded-full bg-brand" style="width:' + (maks ? (x.skor / maks) * 100 : 0).toFixed(1) + '%"></span>' +
+          "</span></td></tr>";
+    }).join("");
+    if (h.rangking.length) $('[data-badge="ahp"]').title = "Peringkat 1: " + (h.rangking[0].nama || h.rangking[0].id);
+  }
+
+  /** Matriks A dan vektor bobot sebagai teks, untuk disalin ke laporan. */
+  function renderAhpTeks(h) {
+    if (h.error) { $("#ahpMatriksTeks").textContent = h.error; return; }
+    var n = D.ahpKriteria.length, w = 11;
+    var garis = "-".repeat(w * (n + 1) + n);
+    var b = [];
+    b.push("Matriks perbandingan berpasangan (A)");
+    b.push("");
+    b.push("".padEnd(w) + D.ahpKriteria.map(function (k, i) { return pad(k.kode || "C" + (i + 1), w); }).join(" ") + "  Bobot");
+    b.push(garis);
+    h.matriks.forEach(function (row, i) {
+      b.push(pad(D.ahpKriteria[i].kode || "C" + (i + 1), w) +
+        row.map(function (v) { return pad(fmtAngka(v), w); }).join(" ") + "  " + h.weights[i].toFixed(4));
+    });
+    b.push("");
+    b.push("Lambda maks = " + h.lambdaMax.toFixed(4) + "   CI = " + h.ci.toFixed(4) +
+      "   RI = " + h.ri.toFixed(2) + "   CR = " + h.cr.toFixed(4));
+    b.push("CI = (lambda maks - n) / (n - 1) = (" + h.lambdaMax.toFixed(4) + " - " + n + ") / " + (n - 1) + " = " + h.ci.toFixed(4));
+    b.push("CR = CI / RI = " + h.ci.toFixed(4) + " / " + h.ri.toFixed(2) + " = " + h.cr.toFixed(4) +
+      "  -> " + (h.consistent ? "konsisten (CR <= 0,1)" : "TIDAK konsisten (CR > 0,1)"));
+    b.push("");
+    b.push("Jumlah kriteria n = " + n);
+    $("#ahpMatriksTeks").textContent = b.join("\n");
+  }
+
+  function pad(s, n) { return String(s).padStart(n); }
+
+  function fmtAngka(v) {
+    if (Number.isInteger(v)) return String(v);
+    for (var d = 2; d <= 9; d++) if (Math.abs(v * d - Math.round(v * d)) < 1e-9) return "1/" + Math.round(1 / v);
+    return v.toFixed(3);
+  }
+
+  $("#ahpPairs").addEventListener("input", function (e) {
+    var s = e.target.closest("[data-pair]");
+    if (!s) return;
+    var ij = s.dataset.pair.split("-"), i = Number(ij[0]), j = Number(ij[1]);
+    var p = D.ahpPairwise.find(function (x) { return x.i === i && x.j === j; });
+    if (!p) return;
+    p.nilai = sliderKeSkala(s.value);
+    $('[data-lab="' + s.dataset.pair + '"]').textContent = labelPasangan(p);
+    // Menghitung ulang tampilan saja; localStorage disentuh sekali saat slider dilepas.
+    hitungUlang();
+  });
+
+  $("#ahpPairs").addEventListener("change", function () {
+    D.save();
+    renderAHP();
+    toast("Nilai perbandingan disimpan.");
+  });
+
+  $("#ahpResetMatriks").addEventListener("click", function () {
+    if (!confirm("Kembalikan semua nilai perbandingan ke 1 (sama penting)?")) return;
+    D.ahpPairwise.forEach(function (p) { p.nilai = 1; });
+    D.save();
+    renderAHP();
+    toast("Semua pasangan dikembalikan ke 1.");
+  });
+
+  $("#ahpTukar").addEventListener("click", function () {
+    // Membalik arah = menukar peran baris dan kolom, jadi nilai menjadi 1/nilai.
+    D.ahpPairwise.forEach(function (p) { p.nilai = 1 / p.nilai; });
+    D.save();
+    renderAHP();
+    toast("Arah perbandingan dibalik.");
+  });
+
+  $("#ahpAltBody").addEventListener("input", function (e) {
+    var inp = e.target.closest("[data-alt]");
+    if (inp) {
+      var a = D.ahpAlternatif.find(function (x) { return x.id === inp.dataset.alt; });
+      if (!a) return;
+      a.nilai[Number(inp.dataset.c)] = Math.min(9, Math.max(1, Math.round(Number(inp.value) || 1)));
+      hitungUlang();
+      return;
+    }
+    var nm = e.target.closest("[data-altnama]");
+    if (nm) {
+      var b = D.ahpAlternatif.find(function (x) { return x.id === nm.dataset.altnama; });
+      if (b) b.nama = nm.value;
+    }
+  });
+
+  $("#ahpAltBody").addEventListener("change", function () { D.save(); renderAHP(); });
+
+  $("#ahpAltBody").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-hapus-alt]");
+    if (!b) return;
+    D.ahpAlternatif = D.ahpAlternatif.filter(function (x) { return x.id !== b.dataset.hapusAlt; });
+    D.save();
+    renderAHP();
+    toast("Satu alternatif dihapus.");
+  });
+
+  $("#ahpTambahBaris").addEventListener("click", function () {
+    var n = D.ahpKriteria.length;
+    D.ahpAlternatif.push({ id: "a" + Date.now().toString(36), nama: "Alternatif baru", nilai: new Array(n).fill(1) });
+    D.save();
+    renderAHP();
+  });
+
+  $("#ahpIsiProduk").addEventListener("click", function () {
+    var n = D.ahpKriteria.length;
+    if (!D.products.length) { toast("Katalog masih kosong.", "err"); return; }
+    if (D.ahpAlternatif.length && !confirm("Daftar alternatif sekarang akan diganti dengan isi katalog produk. Lanjut?")) return;
+    // Nilai awal 1 semua: admin yang menilai, sistem tidak menebak.
+    D.ahpAlternatif = D.products.map(function (p) { return { id: p.id, nama: p.name, nilai: new Array(n).fill(1) }; });
+    D.save();
+    renderAHP();
+    toast(D.ahpAlternatif.length + " produk dimasukkan sebagai alternatif. Isi nilainya.");
+  });
+
+  /** Hitung ulang tampilan AHP tanpa menyentuh localStorage. */
+  function hitungUlang() {
+    var h = D.ahpHasil();
+    if (h.error) return h;
+    var badge = $('[data-badge="ahp-besar"]');
+    badge.textContent = h.consistent ? "Konsisten" : "Tidak konsisten";
+    badge.className = "badge " + (h.consistent ? "badge-ready" : "badge-out");
+    $('[data-ahp="lambda"]').textContent = h.lambdaMax.toFixed(4);
+    $('[data-ahp="ci"]').textContent = h.ci.toFixed(4);
+    $('[data-ahp="cr"]').textContent = h.cr.toFixed(4);
+    $('[data-badge="ahp"]').textContent = h.cr.toFixed(3);
+    $('[data-badge="ahp"]').className = "ml-auto rounded-full px-2 py-0.5 text-xs tabular-nums "
+      + (h.consistent ? "bg-brandsoft text-brandink dark:text-brand" : "bg-dangersoft text-danger");
+    $("#ahpPesan").textContent = h.consistent
+      ? "CR " + h.cr.toFixed(4) + " <= 0,1, jadi bobot prioritas boleh dipakai."
+      : "CR " + h.cr.toFixed(4) + " > 0,1. Perbaiki nilai yang paling bertentangan.";
+    renderAhpBobot(h);
+    renderAhpRanking();
+    renderAhpTeks(h);
+    return h;
+  }
+
+  $("#ahpCopy").addEventListener("click", function () {
+    var h = D.ahpRangking();
+    if (h.error) { toast(h.error, "err"); return; }
+    var teks = "Peringkat\tAlternatif\tNilai akhir\n" + h.rangking.map(function (x) {
+      return x.peringkat + "\t" + (x.nama || x.id) + "\t" + x.skor.toFixed(4);
+    }).join("\n") + "\n\nBobot kriteria (CR = " + h.cr.toFixed(4) + ")\n" +
+      h.kriteria.map(function (k, i) { return (k.kode || "C" + (i + 1)) + "\t" + k.nama + "\t" + h.weights[i].toFixed(4); }).join("\n");
+    navigator.clipboard.writeText(teks).then(
+      function () { toast("Tabel perangkingan disalin."); },
+      function () { toast("Peramban menolak akses papan klip.", "err"); }
+    );
+  });
+
+  function refresh() {
+    renderRingkasan();
+    renderProduk();
+    renderUlasan();
+    renderAnalitik();
+    renderAhpPanduan();
+    renderAHP();
+  }
+
+  renderCatOptions();
+  fillSettings();
+  $("#slTanggal").value = D.tanggalLokal(new Date());
+  $("#slItems").appendChild(barisBarang(null));
+  refresh();
+  setView(location.hash.slice(1) || "ringkasan");
+})();
+</script>
+</body>
+</html>

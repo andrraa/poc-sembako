@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Semua Produk - Toko Sembako Berkah Jaya</title>
+<meta name="description" content="Daftar lengkap sembako Toko Sembako Berkah Jaya Cibubur. Cari barang, saring per kategori, urutkan harga, lalu pesan lewat WhatsApp.">
+<meta name="theme-color" content="#14603c">
+<script>
+  // Kelas .dark dipakai supaya tema bisa dipaksa untuk pengujian, bukan hanya ikut sistem.
+  if (matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
+</script>
+<link rel="preconnect" href="https://thumb.wikimedia.org">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Tailwind v4 versi peramban: praktis untuk demo, tapi CSS dikompilasi saat halaman
+     dibuka. Untuk produksi jalankan `npx @tailwindcss/cli -i src.css -o tailwind.css`. -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<style type="text/tailwindcss">
+  /* Token warna: nilai mentah di :root/.dark, dipetakan ke utilitas Tailwind v4
+     lewat @theme inline supaya varian dark ikut bekerja. */
+  :root{
+    --bg:#f6f7f3; --surface:#ffffff; --surface2:#ecefe7; --surface3:#e2e7dd;
+    --ink:#16211c; --ink2:#4b554f; --ink3:#5f6a64;
+    --line:#dbe1d8; --line2:#c8d0c4;
+    --brand:#14603c; --brand2:#1d7a4c; --brandink:#0d3f28;
+    --brandsoft:#e4efe8; --brandsoft2:#d3e6da;
+    /* Varian "solid": dipakai saat elemen harus tetap terbaca di atas foto. */
+    --brandsolid:#0f5233; --brandsolid2:#146b43;
+    --warn:#8a5a12; --warnsoft:#f6eedd;
+    --danger:#9c3a2c; --dangersoft:#f7e8e5;
+  }
+  .dark{
+    --bg:#0f1512; --surface:#161e19; --surface2:#1c2620; --surface3:#233028;
+    --ink:#eef3ee; --ink2:#b3bfb7; --ink3:#8c9a92;
+    --line:#28332c; --line2:#36443a;
+    --brand:#5fbd8b; --brand2:#78cea0; --brandink:#0b1f14;
+    --brandsoft:#1b2c22; --brandsoft2:#22382b;
+    --brandsolid:#146b43; --brandsolid2:#1a7f51;
+    --warn:#e0b263; --warnsoft:#2e2415;
+    --danger:#e08375; --dangersoft:#1f1310;
+  }
+
+  @theme inline {
+    --color-bg:var(--bg); --color-surface:var(--surface); --color-surface2:var(--surface2); --color-surface3:var(--surface3);
+    --color-ink:var(--ink); --color-ink2:var(--ink2); --color-ink3:var(--ink3);
+    --color-line:var(--line); --color-line2:var(--line2);
+    --color-brand:var(--brand); --color-brand2:var(--brand2); --color-brandink:var(--brandink);
+    --color-brandsolid:var(--brandsolid); --color-brandsolid2:var(--brandsolid2);
+    --color-brandsoft:var(--brandsoft); --color-brandsoft2:var(--brandsoft2);
+    --color-warn:var(--warn); --color-warnsoft:var(--warnsoft);
+    --color-danger:var(--danger); --color-dangersoft:var(--dangersoft);
+    --font-sans:"Geist",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --font-display:"Bricolage Grotesque","Geist",system-ui,sans-serif;
+    --ease-swift:cubic-bezier(.16,1,.3,1);
+    --radius-card:18px;
+  }
+
+  @custom-variant dark (&:where(.dark, .dark *));
+
+  @layer base{
+    html{-webkit-text-size-adjust:100%}
+    body{ @apply bg-bg text-ink font-sans antialiased; overflow-x:hidden }
+    h1,h2,h3,h4{ @apply font-display font-semibold tracking-[-.02em] leading-[1.1]; text-wrap:balance }
+    :focus-visible{ @apply outline-2 outline-offset-2 outline-brand; border-radius:4px }
+    img,svg{ @apply block }
+    img{ @apply max-w-full }
+  }
+
+  @layer components{
+    .wrap{ @apply w-full max-w-[1240px] mx-auto px-5 md:px-8 }
+
+    /* Satu tema ikon: stroke 1.75, ujung bulat. */
+    .icon{ @apply size-[22px] shrink-0 fill-none stroke-current; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round }
+    .icon-filled{ @apply fill-current stroke-none }
+
+    .btn{ @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold cursor-pointer
+                 whitespace-nowrap transition-[background-color,border-color,color,transform] duration-150 ease-swift
+                 active:translate-y-px active:scale-[.985] px-6 py-3.5 text-[15.5px] }
+    .btn-sm{ @apply px-4 py-2.5 text-sm }
+    /* .btn-solid dipakai di atas gambar: warnanya sengaja tidak ikut tema terang. */
+    .btn-solid{ @apply bg-brandsolid text-white hover:bg-brandsolid2 disabled:hover:bg-brandsolid }
+    .btn-primary{ @apply bg-brand text-white hover:bg-brand2 disabled:opacity-55 disabled:cursor-not-allowed disabled:hover:bg-brand disabled:active:scale-100 }
+    .btn-ghost{ @apply border border-line2 hover:bg-surface2 hover:border-ink3 disabled:opacity-55 disabled:cursor-not-allowed }
+    .btn-block{ @apply w-full }
+
+    .pill{ @apply inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink2 whitespace-nowrap }
+    .chip{ @apply inline-flex shrink-0 snap-start items-center rounded-full border border-line2 bg-surface px-4 text-[15px] font-medium text-ink2
+                 hover:border-ink3 hover:text-ink transition-colors duration-150
+                 aria-pressed:bg-brand aria-pressed:border-brand aria-pressed:text-white }
+    .chip{ min-height:40px }
+
+    .field-label{ @apply block text-sm font-medium mb-1.5 }
+    .field-input{ @apply w-full rounded-xl border border-line2 bg-bg px-4 py-3 text-base text-ink placeholder:text-ink3
+                        focus:outline-none focus:border-brand focus:ring-3 focus:ring-brandsoft }
+    .field-hint{ @apply text-[13px] text-ink3 mt-1.5 }
+
+    .badge{ @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium }
+    .badge-ready{ @apply bg-brandsoft text-brandink dark:text-brand }
+    .badge-low{ @apply bg-warnsoft text-warn }
+    .badge-out{ @apply bg-dangersoft text-danger }
+
+    /* Tautan daftar di footer: tetap rapi, tapi sasaran sentuh cukup besar. */
+    .tautan{ @apply inline-flex min-h-10 items-center hover:text-brand hover:underline hover:underline-offset-[3px] }
+
+    .reveal{ @apply opacity-0 translate-y-3.5 transition duration-500 ease-swift }
+    .reveal.is-in{ @apply opacity-100 translate-y-0 }
+    .noscript-safe .reveal{ @apply opacity-100 translate-y-0 }
+
+    /* Ponsel: sasaran sentuh minimal 44px. Ditaruh paling akhir agar
+       menang atas min-height .chip di atas; tidak memengaruhi layar besar. */
+    @media (max-width: 640px){
+      .btn, .chip, .tautan{ min-height:44px }
+      .field-input{ min-height:48px }
+      #pager .btn{ min-width:44px }
+    }
+  }
+
+  /* Snap rail: kategori di layar kecil, dan ulasan di layar besar. */
+  .rail{ @apply flex snap-x snap-proximity gap-2 overflow-x-auto px-5 -mx-5 md:px-8 md:-mx-8 }
+  .rail::-webkit-scrollbar{ display:none }
+  #reviewList::-webkit-scrollbar{ display:none }
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{ animation-duration:.001ms !important; transition-duration:.001ms !important }
+    .reveal{ opacity:1; transform:none }
+  }
+</style>
+</head>
+<body>
+
+<a class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-full focus:bg-brand focus:px-5 focus:py-3 focus:font-semibold focus:text-white" href="#produk">Lewati ke daftar produk</a>
+
+<!-- Tema ikon: samakan goresan, ukuran, dan ujung garis. -->
+<svg width="0" height="0" class="absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m4.5 12.5 5 5 10-11"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11Z"/><circle cx="12" cy="10.3" r="2.6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.2 3.5h3l1.6 4-2.1 1.5a11.5 11.5 0 0 0 5.8 5.8l1.5-2.1 4 1.6v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.2 5.7 2 2 0 0 1 6.2 3.5Z"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1.2 11.5a1.5 1.5 0 0 1-1.5 1.3H7.7a1.5 1.5 0 0 1-1.5-1.3Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.6 2.6 5.3 5.9.85-4.25 4.15 1 5.9L12 17l-5.25 2.8 1-5.9L3.5 9.75l5.9-.85Z"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6.5h10.5v9H3z"/><path d="M13.5 10h4l3 3v2.5h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="16.5" cy="17.5" r="1.6"/></symbol>
+  <symbol id="i-price" viewBox="0 0 24 24"><path d="M5 4h11M5 8.5h11M15 4c0 4.5-3 6.5-7.5 6.5H5l7 9.5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5l7 2.5v6c0 4.4-3 7.6-7 8.5-4-.9-7-4.1-7-8.5V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h13M13 6.5l5.5 5.5L13 17.5"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></symbol>
+</svg>
+
+<!-- ============================== HEADER ==============================
+     Satu baris di layar besar, dua baris di ponsel. Navigasi dibuat rail
+     yang bisa digeser, jadi tidak perlu menu buka-tutup. -->
+<header class="sticky top-0 z-80 border-b border-line bg-bg/88 backdrop-blur-md backdrop-saturate-150">
+  <div class="wrap flex flex-wrap items-center gap-x-4 gap-y-2 py-3 md:gap-x-6">
+    <a class="flex min-h-11 shrink-0 items-center gap-2.5" href="index.html">
+      <span class="grid size-9.5 shrink-0 place-items-center rounded-[11px] bg-brand font-display text-[17px] font-bold tracking-[-.03em] text-white" aria-hidden="true">BJ</span>
+      <span class="flex flex-col leading-tight">
+        <span class="font-display text-base font-semibold tracking-[-.02em]" data-slot="nama">Berkah Jaya</span>
+        <span class="text-xs text-ink3">Toko Sembako &middot; Cibubur</span>
+      </span>
+    </a>
+
+    <nav class="order-last -mx-5 w-[calc(100%+2.5rem)] overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:order-none md:mx-0 md:ml-auto md:w-auto md:overflow-visible md:px-0 md:pb-0"
+         aria-label="Navigasi utama" style="scrollbar-width:none">
+      <ul class="flex items-center gap-1">
+        <li class="shrink-0"><a class="flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 text-[15px] font-medium text-ink2 transition-colors duration-150 hover:bg-surface2 hover:text-ink" href="index.html#katalog">Katalog</a></li>
+        <li class="shrink-0"><a class="flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 text-[15px] font-medium text-ink2 transition-colors duration-150 hover:bg-surface2 hover:text-ink" href="products.html">Semua produk</a></li>
+        <li class="shrink-0"><a class="flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 text-[15px] font-medium text-ink2 transition-colors duration-150 hover:bg-surface2 hover:text-ink" href="index.html#kenapa">Kenapa kami</a></li>
+        <li class="shrink-0"><a class="flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 text-[15px] font-medium text-ink2 transition-colors duration-150 hover:bg-surface2 hover:text-ink" href="index.html#ulasan">Ulasan</a></li>
+        <li class="shrink-0"><a class="flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 text-[15px] font-medium text-ink2 transition-colors duration-150 hover:bg-surface2 hover:text-ink" href="index.html#tanya">Tanya jawab</a></li>
+        <li class="shrink-0"><a class="flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 text-[15px] font-medium text-ink2 transition-colors duration-150 hover:bg-surface2 hover:text-ink" href="index.html#lokasi">Lokasi</a></li>
+      </ul>
+    </nav>
+
+    <button class="btn btn-primary btn-sm ml-auto md:ml-0" type="button" data-wa="umum">
+      <svg class="icon icon-filled size-[18px]" aria-hidden="true"><use href="#i-wa"></use></svg>
+      Chat Toko
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============================== JUDUL ============================== -->
+  <section class="pt-8 pb-6 md:pt-12 md:pb-8">
+    <div class="wrap">
+      <nav class="mb-5 flex min-h-11 items-center gap-2 text-[14px] text-ink3" aria-label="Remah roti">
+        <a class="tautan" href="index.html">Beranda</a>
+        <span aria-hidden="true">/</span>
+        <span class="text-ink2">Semua produk</span>
+      </nav>
+      <h1 class="mb-3 text-[clamp(1.7rem,1.3rem+1.8vw,2.6rem)] tracking-[-.03em]">Semua produk</h1>
+      <p class="max-w-[62ch] text-[16.5px] text-ink2">Harga eceran dan grosir seluruh barang toko. Pakai pencarian dan filter di bawah untuk mempersempit pilihan.</p>
+    </div>
+  </section>
+
+  <!-- ============================== PRODUK ============================= -->
+  <section class="pb-16 md:pb-24" id="produk">
+    <div class="wrap">
+      <div class="mb-5 grid gap-3 md:mb-6 md:grid-cols-[1fr_auto_auto] md:items-center">
+        <div class="relative w-full md:max-w-[420px]">
+          <svg class="icon pointer-events-none absolute top-1/2 left-4 size-[18px] -translate-y-1/2 text-ink3" aria-hidden="true"><use href="#i-search"></use></svg>
+          <label class="sr-only" for="searchInput">Cari nama barang atau merek</label>
+          <input class="field-input ps-11.5 pe-12" id="searchInput" type="search" placeholder="Cari beras, minyak, telur..." autocomplete="off">
+          <button class="absolute top-1/2 right-2 hidden size-11 -translate-y-1/2 place-items-center rounded-full text-ink3 hover:bg-surface2 hover:text-ink" type="button" id="searchClear" aria-label="Hapus pencarian">
+            <svg class="icon size-[18px]" aria-hidden="true"><use href="#i-close"></use></svg>
+          </button>
+        </div>
+
+        <div>
+          <label class="sr-only" for="fStock">Saring status stok</label>
+          <select class="field-input" id="fStock">
+            <option value="semua">Semua stok</option>
+            <option value="ready">Ready</option>
+            <option value="low">Stok terbatas</option>
+            <option value="out">Stok kosong</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="sr-only" for="fSort">Urutkan</label>
+          <select class="field-input" id="fSort">
+            <option value="default">Urutan bawaan</option>
+            <option value="murah">Harga termurah</option>
+            <option value="mahal">Harga termahal</option>
+            <option value="nama">Nama A-Z</option>
+            <option value="grosir">Grosir termurah</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="rail -mt-1 mb-4 gap-2" id="catList" role="group" aria-label="Filter kategori"></div>
+
+      <div class="mb-6 flex flex-wrap items-center gap-2" id="chipList" hidden></div>
+
+      <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <p class="text-[14.5px] text-ink2" id="daftarCount">-</p>
+        <p class="pill">
+          <svg class="icon size-[18px]" aria-hidden="true"><use href="#i-clock"></use></svg>
+          Harga per: <b class="font-semibold tabular-nums text-ink" id="priceDate">-</b>
+        </p>
+      </div>
+
+      <p class="sr-only" id="resultCount" role="status" aria-live="polite"></p>
+      <div class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4" id="productGrid"></div>
+
+      <nav class="mt-9 flex flex-wrap items-center justify-center gap-2" id="pager" aria-label="Halaman produk" hidden></nav>
+
+      <p class="mt-10 rounded-[18px] border border-dashed border-line2 px-5 py-6 text-center text-[15px] text-ink2">
+        Barang belum ketemu? Tanyakan lewat WhatsApp, kami cek stok di toko.
+        <button class="btn btn-ghost btn-sm mx-auto mt-3 block" type="button" data-wa="umum">Tanya Admin</button>
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="border-t border-line bg-surface2 pt-13 pb-7">
+  <div class="wrap">
+    <div class="grid gap-8 md:grid-cols-3">
+      <div>
+        <a class="mb-3.5 flex min-h-11 items-center gap-2.5" href="index.html">
+          <span class="grid size-9.5 place-items-center rounded-[11px] bg-brand font-display text-[17px] font-bold text-white" aria-hidden="true">BJ</span>
+          <span class="flex flex-col leading-tight">
+            <span class="font-display text-base font-semibold" data-slot="nama">Berkah Jaya</span>
+            <span class="text-xs text-ink3">Toko Sembako &middot; Cibubur</span>
+          </span>
+        </a>
+        <p class="max-w-[42ch] text-[14.5px] text-ink2">Melayani pembelian eceran dan grosir sembako untuk warga Cibubur dan sekitarnya sejak 2011.</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="rounded-full border border-line2 px-3 py-1.5 text-xs text-ink2">Tunai / COD</span>
+          <span class="rounded-full border border-line2 px-3 py-1.5 text-xs text-ink2">Transfer BCA</span>
+          <span class="rounded-full border border-line2 px-3 py-1.5 text-xs text-ink2">Transfer BRI</span>
+          <span class="rounded-full border border-line2 px-3 py-1.5 text-xs text-ink2">QRIS</span>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="mb-3.5 text-sm font-semibold">Halaman</h3>
+        <ul class="text-[14.5px] text-ink2">
+          <li><a class="tautan" href="products.html">Semua produk</a></li>
+          <li><a class="tautan" href="index.html#katalog">Katalog produk</a></li>
+          <li><a class="tautan" href="#kenapa">Kenapa kami</a></li>
+          <li><a class="tautan" href="#ulasan">Ulasan pelanggan</a></li>
+          <li><a class="tautan" href="#tanya">Tanya jawab</a></li>
+          <li><a class="tautan" href="#lokasi">Lokasi dan jam buka</a></li>
+          <li><a class="tautan" href="admin.html">Halaman admin toko</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="mb-3.5 text-sm font-semibold">Hubungi kami</h3>
+        <ul class="text-[14.5px] text-ink2">
+          <li><a class="tautan" href="#" data-slot="tel-link">-</a></li>
+          <li><button class="btn btn-ghost btn-sm" type="button" data-wa="umum">Chat WhatsApp toko</button></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-9 flex flex-wrap justify-between gap-x-6 gap-y-2.5 border-t border-line pt-5.5 text-[13.5px] text-ink3">
+      <span>&copy; <span id="year">2026</span> Toko Sembako Berkah Jaya</span>
+      <span>Harga dapat berubah sewaktu-waktu tanpa pemberitahuan.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ==================== PILIHAN + TOMBOL MELAYANG ==================== -->
+<div class="pointer-events-none fixed bottom-4 left-1/2 z-70 w-[calc(100%-1.5rem)] max-w-[720px] -translate-x-1/2 translate-y-[140%] opacity-0 transition duration-350 ease-swift"
+     id="pickBar" role="region" aria-label="Pilihan produk">
+  <div class="pointer-events-auto flex items-center justify-between gap-3 rounded-full border border-line2 bg-surface py-2.5 ps-5 pe-2.5 shadow-xl">
+    <div class="min-w-0">
+      <span class="block text-[15px] font-semibold" id="pickCount">0 produk dipilih</span>
+      <span class="block text-[13.5px] tabular-nums text-ink2" id="pickTotal">Perkiraan total Rp0</span>
+    </div>
+    <div class="flex shrink-0 gap-2">
+      <button class="grid size-11 place-items-center rounded-full border border-line2 text-ink2 hover:bg-surface2 hover:text-ink" type="button" id="pickClear" aria-label="Kosongkan pilihan">
+        <svg class="icon size-[18px]" aria-hidden="true"><use href="#i-close"></use></svg>
+      </button>
+      <button class="btn btn-primary btn-sm" type="button" id="pickSend">
+        <svg class="icon icon-filled size-[18px]" aria-hidden="true"><use href="#i-wa"></use></svg>
+        Pesan Pilihan
+      </button>
+    </div>
+  </div>
+</div>
+
+<button class="btn btn-primary fixed bottom-5 right-4 z-65 p-4 shadow-xl transition-[bottom,transform] duration-350 ease-swift hover:-translate-y-0.5 md:right-6 md:px-5" id="fab" data-wa="umum">
+  <svg class="icon icon-filled size-6" aria-hidden="true"><use href="#i-wa"></use></svg>
+  <span class="hidden md:inline">Tanya Toko</span>
+</button>
+
+
+<script src="data.js"></script>
+<script src="katalog.js"></script>
+<script>
+(function () {
+  "use strict";
+  var D = window.BJ;
+  var $ = function (s) { return document.querySelector(s); };
+
+  var K = KATALOG.mount({
+    grid: "#productGrid",
+    search: "#searchInput",
+    clear: "#searchClear",
+    cats: "#catList",
+    stock: "#fStock",
+    sort: "#fSort",
+    chips: "#chipList",
+    pager: "#pager",
+    count: "#resultCount",
+    perPage: 12,
+    after: function (jumlah, maxHal, halaman) {
+      $("#daftarCount").textContent = jumlah + " produk"
+        + (maxHal > 1 ? " \u00b7 halaman " + halaman + " dari " + maxHal : "");
+    }
+  });
+
+  // Tautan dari beranda: products.html?kategori=beras&cari=minyak&urut=murah
+  // "kategori" sudah ditangani katalog.js saat mount.
+  var p = new URLSearchParams(location.search);
+  var cari = p.get("cari");
+  if (cari) {
+    var input = $("#searchInput");
+    input.value = cari;
+    input.dispatchEvent(new Event("input"));
+  }
+  var urut = p.get("urut");
+  if (urut && $("#fSort").querySelector('option[value="' + urut + '"]')) {
+    $("#fSort").value = urut;
+    $("#fSort").dispatchEvent(new Event("change"));
+  }
+
+  $("#priceDate").textContent = new Date(D.settings.updated + "T00:00:00")
+    .toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+
+  // Kontak toko di footer.
+  var tel = $('[data-slot="tel-link"]');
+  tel.textContent = D.settings.telepon;
+  tel.href = "tel:+62" + D.settings.telepon.replace(/\D/g, "").replace(/^0/, "");
+  // Nama & alamat toko pada header dan footer.
+  document.querySelectorAll('[data-slot="nama"]').forEach(function (n) { n.textContent = D.settings.singkat; });
+
+  document.querySelectorAll('[data-wa="umum"]').forEach(function (b) {
+    b.addEventListener("click", function () { window.open(D.waUrl(D.waGeneral()), "_blank", "noopener"); });
+  });
+  $("#fab").addEventListener("click", function () { window.open(D.waUrl(D.waGeneral()), "_blank", "noopener"); });
+  $("#year").textContent = String(new Date().getFullYear());
+
+  // Reveal untuk bagian di luar kisi produk (kisi ditangani katalog.js).
+  var sisa = document.querySelectorAll(".reveal:not(.is-in)");
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+    sisa.forEach(function (t) { io.observe(t); });
+  } else {
+    sisa.forEach(function (t) { t.classList.add("is-in"); });
+  }
+})();
+</script>
+</body>
+</html>
