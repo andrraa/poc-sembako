@@ -14,8 +14,8 @@
       singkat: "Berkah Jaya",
       wa: "6281234567890",
       telepon: "0812-3456-7890",
-      alamat: "Jl. Raya Cibubur No. 42, Cibubur, Jakarta Timur 13720",
-      maps: "https://maps.google.com/?q=Jl.+Raya+Cibubur+Jakarta+Timur",
+      alamat: "Jl. Raden Intan No. 42, Bandar Lampung 35117",
+      maps: "https://maps.google.com/?q=Bandar+Lampung",
       minAntar: 50000,
       gratisAntar: 150000,
       radius: "5 km",
@@ -242,13 +242,13 @@
     reviews: [
       { id: "r1", name: "Bu Retno Wulandari", role: "Pelanggan sejak 2015", stars: 5, status: "tayang",
         text: "Telur dan beras selalu datang utuh. Kurirnya sabar, mau menunggu saya hitung dulu barangnya." },
-      { id: "r2", name: "Pak Hendra Gunawan", role: "Pemilik warung makan, Cibubur", stars: 5, status: "tayang",
+      { id: "r2", name: "Pak Hendra Gunawan", role: "Pemilik warung makan, Bandar Lampung", stars: 5, status: "tayang",
         text: "Saya ambil minyak dan beras grosir tiap minggu. Harga grosirnya jelas tertulis di web, jadi tidak perlu tawar-menawar lagi." },
-      { id: "r3", name: "Mbak Sinta Prameswari", role: "Karyawan, Cibubur", stars: 4, status: "tayang",
+      { id: "r3", name: "Mbak Sinta Prameswari", role: "Karyawan, Bandar Lampung", stars: 4, status: "tayang",
         text: "Pesan lewat WhatsApp dari kantor, sore sudah sampai di rumah. Pesan otomatisnya enak, tidak perlu ketik ulang daftar belanjaan." },
-      { id: "r4", name: "Pak Maruli Sitompul", role: "Pelanggan, Pondok Kelapa", stars: 5, status: "tayang",
+      { id: "r4", name: "Pak Maruli Sitompul", role: "Pelanggan, Teluk Betung", stars: 5, status: "tayang",
         text: "Saya biasa beli mie instan satu dus. Sempat telur pecah dua butir dan langsung diganti tanpa saya minta." },
-      { id: "r5", name: "Bu Yohana Kusuma", role: "Pelanggan, Cibubur", stars: 4, status: "tayang",
+      { id: "r5", name: "Bu Yohana Kusuma", role: "Pelanggan, Bandar Lampung", stars: 4, status: "tayang",
         text: "Harga gula dan tepung di sini lebih murah dari minimarket dekat rumah. Buka pagi, jadi bisa belanja sebelum berangkat kerja." }
     ],
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Toko Sembako Berkah Jaya - Katalog & Pesan via WhatsApp</title>
-<meta name="description" content="Katalog harga sembako harian Toko Sembako Berkah Jaya Cibubur. Harga eceran dan grosir, pesan langsung lewat WhatsApp.">
+<meta name="description" content="Katalog harga sembako harian Toko Sembako Berkah Jaya Bandar Lampung. Harga eceran dan grosir, pesan langsung lewat WhatsApp.">
 <meta name="theme-color" content="#14603c">
 <script>
   // Kelas .dark dipakai supaya tema bisa dipaksa untuk pengujian, bukan hanya ikut sistem.
@@ -98,7 +98,7 @@
     .field-hint{ @apply text-[13px] text-ink3 mt-1.5 }
 
     .badge{ @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium }
-    .badge-ready{ @apply bg-brandsoft text-brandink dark:text-brand }
+    .badge-ready{ @apply bg-brandsoft text-brand }
     .badge-low{ @apply bg-warnsoft text-warn }
     .badge-out{ @apply bg-dangersoft text-danger }
 
@@ -162,7 +162,7 @@
       <span class="grid size-9.5 shrink-0 place-items-center rounded-[11px] bg-brand font-display text-[17px] font-bold tracking-[-.03em] text-white" aria-hidden="true">BJ</span>
       <span class="flex flex-col leading-tight">
         <span class="font-display text-base font-semibold tracking-[-.02em]">Berkah Jaya</span>
-        <span class="text-xs text-ink3">Toko Sembako &middot; Cibubur</span>
+        <span class="text-xs text-ink3">Toko Sembako &middot; Bandar Lampung</span>
       </span>
     </a>
 
@@ -380,7 +380,7 @@
       <div class="grid gap-7 lg:grid-cols-[1.1fr_.9fr] lg:gap-11">
         <div class="h-64 overflow-hidden rounded-[18px] border border-line bg-surface2 md:h-80 lg:h-full lg:min-h-80">
           <iframe class="size-full" title="Peta lokasi Toko Sembako Berkah Jaya"
-            src="https://maps.google.com/maps?q=Jl.%20Raya%20Cibubur%20Jakarta%20Timur&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            src="https://maps.google.com/maps?q=Bandar%20Lampung&t=&z=15&ie=UTF8&iwloc=&output=embed"
             loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
 
@@ -431,10 +431,10 @@
           <span class="grid size-9.5 place-items-center rounded-[11px] bg-brand font-display text-[17px] font-bold text-white" aria-hidden="true">BJ</span>
           <span class="flex flex-col leading-tight">
             <span class="font-display text-base font-semibold">Berkah Jaya</span>
-            <span class="text-xs text-ink3">Toko Sembako &middot; Cibubur</span>
+            <span class="text-xs text-ink3">Toko Sembako &middot; Bandar Lampung</span>
           </span>
         </a>
-        <p class="max-w-[42ch] text-[14.5px] text-ink2">Melayani pembelian eceran dan grosir sembako untuk warga Cibubur dan sekitarnya sejak 2011.</p>
+        <p class="max-w-[42ch] text-[14.5px] text-ink2">Melayani pembelian eceran dan grosir sembako untuk warga Bandar Lampung dan sekitarnya sejak 2011.</p>
         <div class="mt-4 flex flex-wrap gap-2">
           <span class="rounded-full border border-line2 px-3 py-1.5 text-xs text-ink2">Tunai / COD</span>
           <span class="rounded-full border border-line2 px-3 py-1.5 text-xs text-ink2">Transfer BCA</span>
@@ -679,7 +679,7 @@
     var rating = Number($("#rvRating").value);
     var text = $("#rvText").value.trim();
 
-    msg.classList.remove("hidden", "bg-brandsoft", "text-brandink", "bg-dangersoft", "text-danger", "dark:text-brand");
+    msg.classList.remove("hidden", "bg-brandsoft", "bg-dangersoft", "text-danger", "text-brand");
     if (!name || !text) {
       msg.textContent = "Nama dan isi ulasan perlu diisi dulu sebelum dikirim.";
       msg.classList.add("bg-dangersoft", "text-danger");
@@ -688,7 +688,7 @@
     // Ulasan baru masuk sebagai pending. Di versi statis ini belum disimpan
     // ke mana pun; admin menambahkannya lewat halaman admin.
     msg.textContent = "Terima kasih, " + name + ". Ulasan " + rating + " bintang Anda sudah kami terima dan akan ditayangkan setelah diperiksa admin.";
-    msg.classList.add("bg-brandsoft", "text-brandink", "dark:text-brand");
+    msg.classList.add("bg-brandsoft", "text-brand");
     this.reset();
   });
 

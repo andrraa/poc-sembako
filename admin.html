@@ -69,7 +69,7 @@
     .btn-primary{ @apply bg-brand text-white hover:bg-brand2 }
     .btn-ghost{ @apply border border-line2 hover:bg-surface2 }
     .btn-danger{ @apply border border-danger/35 text-danger hover:bg-dangersoft }
-    .btn-ok{ @apply border border-brand/35 bg-brandsoft text-brandink hover:brightness-95 dark:text-brand }
+    .btn-ok{ @apply border border-brand/35 bg-brandsoft text-brand hover:brightness-95 }
     .btn-xs{ @apply px-3 py-1.5 text-[13px] rounded-lg }
 
     .field-label{ @apply block text-[13.5px] font-medium mb-1.5 }
@@ -80,11 +80,11 @@
     .navlink{ @apply flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-[14.5px] font-medium text-ink2 transition-colors duration-150 hover:bg-surface2 hover:text-ink }
     .navlink[aria-current="page"]{ @apply bg-brand text-white hover:bg-brand }
     .badge{ @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium }
-    .badge-ready{ @apply bg-brandsoft text-brandink dark:text-brand }
+    .badge-ready{ @apply bg-brandsoft text-brand }
     .badge-low{ @apply bg-warnsoft text-warn }
     .badge-out{ @apply bg-dangersoft text-danger }
     .badge-pending{ @apply bg-warnsoft text-warn }
-    .badge-published{ @apply bg-brandsoft text-brandink dark:text-brand }
+    .badge-published{ @apply bg-brandsoft text-brand }
     .badge-hidden{ @apply bg-surface3 text-ink3 }
 
     .th{ @apply px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-ink3 whitespace-nowrap }
@@ -124,7 +124,7 @@
       <span class="grid size-9.5 place-items-center rounded-[11px] bg-brand font-display text-base font-bold text-white" aria-hidden="true">BJ</span>
       <span class="flex flex-col leading-tight">
         <span class="font-display text-[15px] font-semibold">Admin Toko</span>
-        <span class="text-xs text-ink3">Berkah Jaya &middot; Cibubur</span>
+        <span class="text-xs text-ink3">Berkah Jaya &middot; Bandar Lampung</span>
       </span>
       <button class="btn btn-ghost btn-xs ml-auto lg:hidden" type="button" id="navToggle" aria-expanded="false" aria-controls="adminNav">Menu</button>
     </div>
@@ -618,7 +618,7 @@
     var t = $("#toast");
     t.textContent = text;
     t.className = "mb-5 rounded-xl border px-4 py-3 text-[14px] "
-      + (tone === "err" ? "border-danger/35 bg-dangersoft text-danger" : "border-brand/35 bg-brandsoft text-brandink dark:text-brand");
+      + (tone === "err" ? "border-danger/35 bg-dangersoft text-danger" : "border-brand/35 bg-brandsoft text-brand");
   }
 
   function stockBadge(p) {
@@ -1401,7 +1401,7 @@
     ];
 
     $("#ahpPanduanIsi").innerHTML = langkah.map(function (l) {
-      return '<div class="flex gap-3"><span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-brandsoft text-[12px] font-bold text-brandink dark:text-brand">'
+      return '<div class="flex gap-3"><span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-brandsoft text-[12px] font-bold text-brand">'
         + l[0] + '</span><div><p class="font-semibold text-ink">' + l[1] + '</p><p class="mt-0.5">' + l[2] + "</p></div></div>";
     }).join("")
       + '<div class="rounded-lg border border-line bg-bg p-3"><p class="mb-2 font-semibold text-ink">Tabel angka contoh (Harga, Kualitas, Pelayanan)</p>'
@@ -1452,7 +1452,7 @@
 
     $('[data-badge="ahp"]').textContent = h.cr.toFixed(3);
     $('[data-badge="ahp"]').className = "ml-auto rounded-full px-2 py-0.5 text-xs tabular-nums "
-      + (h.consistent ? "bg-brandsoft text-brandink dark:text-brand" : "bg-dangersoft text-danger");
+      + (h.consistent ? "bg-brandsoft text-brand" : "bg-dangersoft text-danger");
 
     $("#ahpAltHead").innerHTML = '<tr><th class="th">Alternatif</th>' +
       D.ahpKriteria.map(function (k, i) {
@@ -1695,7 +1695,7 @@
     $('[data-ahp="cr"]').textContent = h.cr.toFixed(4);
     $('[data-badge="ahp"]').textContent = h.cr.toFixed(3);
     $('[data-badge="ahp"]').className = "ml-auto rounded-full px-2 py-0.5 text-xs tabular-nums "
-      + (h.consistent ? "bg-brandsoft text-brandink dark:text-brand" : "bg-dangersoft text-danger");
+      + (h.consistent ? "bg-brandsoft text-brand" : "bg-dangersoft text-danger");
     $("#ahpPesan").textContent = h.consistent
       ? "CR " + h.cr.toFixed(4) + " <= 0,1, jadi bobot prioritas boleh dipakai."
       : "CR " + h.cr.toFixed(4) + " > 0,1. Perbaiki nilai yang paling bertentangan.";
